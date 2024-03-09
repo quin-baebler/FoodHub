@@ -4,4 +4,7 @@
     <string name="post">Post</string>
     <string name="logger">Logger</string>
     <string name="welcome">Welcome</string>
+    <string name="login">Log In</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>

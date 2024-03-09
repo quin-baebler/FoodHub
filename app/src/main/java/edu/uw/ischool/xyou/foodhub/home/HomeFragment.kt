@@ -1,5 +1,6 @@
 package edu.uw.ischool.xyou.foodhub.home
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -41,6 +42,12 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "onViewCreated")
 
+        val sharedPreferences = requireActivity().getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "User")
+
+        val profileButton = view.findViewById<Button>(R.id.profile_button)
+        profileButton.text = username!!.uppercase()
+
         val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar)
         progressBar.visibility = View.VISIBLE
 
@@ -62,7 +69,7 @@ class HomeFragment : Fragment() {
     }
 
     private suspend fun fetchPostData(): List<Post> {
-        val url = "${BASE_URL}posts"
+        val url = "$BASE_URL/posts"
         val completableDeferred = CompletableDeferred<List<Post>>()
 
         val request = JsonArrayRequest(
