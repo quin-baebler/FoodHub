@@ -4,7 +4,7 @@ import edu.uw.ischool.xyou.foodhub.data.Post
 import org.json.JSONArray
 
 class JsonParser {
-    fun posts(jsonString: String): List<Post> {
+    fun parsePosts(jsonString: String): List<Post> {
         val posts = mutableListOf<Post>()
         val jsonArray = JSONArray(jsonString)
         for (i in 0 until jsonArray.length()) {
