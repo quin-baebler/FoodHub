@@ -5,8 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import edu.uw.ischool.xyou.foodhub.R
@@ -14,7 +19,6 @@ import edu.uw.ischool.xyou.foodhub.data.Post
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.*
-import kotlin.coroutines.resumeWithException
 
 /**
  * A simple [Fragment] subclass.
@@ -35,13 +39,24 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated")
+
+        val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar)
+        progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
             try {
                 val posts = fetchPostData()
                 Log.d(TAG, "Post data: $posts")
+
+                val recyclerView = view.findViewById<RecyclerView>(R.id.rv_posts)
+                recyclerView.adapter = PostAdapter(posts)
+                recyclerView.layoutManager = LinearLayoutManager(context)
+
+                progressBar.visibility = View.GONE
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to fetch post data", e)
+                Toast.makeText(context, "Error loading, please try again", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
             }
         }
     }
@@ -53,7 +68,7 @@ class HomeFragment : Fragment() {
         val request = JsonArrayRequest(
             Request.Method.GET, url, null,
             { response ->
-                val posts = JsonParser().posts(response.toString())
+                val posts = JsonParser().parsePosts(response.toString())
                 completableDeferred.complete(posts)
             },
             { error ->
