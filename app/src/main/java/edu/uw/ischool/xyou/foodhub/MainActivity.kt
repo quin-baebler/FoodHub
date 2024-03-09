@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import edu.uw.ischool.xyou.foodhub.databinding.ActivityMainBinding
+import edu.uw.ischool.xyou.foodhub.home.HomeFragment
+import edu.uw.ischool.xyou.foodhub.logger.LoggerFragment
+import edu.uw.ischool.xyou.foodhub.post.PostFragment
 
 class MainActivity : AppCompatActivity() {
 
