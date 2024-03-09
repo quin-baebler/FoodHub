@@ -6,6 +6,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.yourappname.LoginFragment
 import edu.uw.ischool.xyou.foodhub.databinding.ActivityMainBinding
+import edu.uw.ischool.xyou.foodhub.home.HomeFragment
+import edu.uw.ischool.xyou.foodhub.logger.LoggerFragment
+import edu.uw.ischool.xyou.foodhub.post.PostFragment
 
 class MainActivity : AppCompatActivity(), FragmentNavigationListener{
 
