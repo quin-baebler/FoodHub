@@ -2,13 +2,15 @@ package edu.uw.ischool.xyou.foodhub
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
+import com.example.yourappname.LoginFragment
 import edu.uw.ischool.xyou.foodhub.databinding.ActivityMainBinding
 import edu.uw.ischool.xyou.foodhub.home.HomeFragment
 import edu.uw.ischool.xyou.foodhub.logger.LoggerFragment
 import edu.uw.ischool.xyou.foodhub.post.PostFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentNavigationListener{
 
     private lateinit var binding: ActivityMainBinding
 
@@ -18,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // initialize the app with the home fragment
-        replaceFragment(HomeFragment())
+        replaceFragment(LoginFragment())
+        hideNavigationBar()
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> replaceFragment(HomeFragment())
@@ -28,9 +31,20 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        val loginFragment = LoginFragment()
+        loginFragment.setFragmentNavigationListener(this)
+       // showNavigationBar()
+    }
+    private fun showNavigationBar() {
+        binding.bottomNavigation.visibility = View.VISIBLE
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    private fun hideNavigationBar() {
+        binding.bottomNavigation.visibility = View.GONE
+    }
+
+
+    override fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
             .commit()
