@@ -24,6 +24,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.log
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,10 +57,10 @@ class LoggerFragment : Fragment() {
     }
 
     private fun setUpCards(view: View) {
-        var logInfo = JSONObject()
         lifecycleScope.launch {
             try {
-                logInfo = fetchLoggerData()
+                val logInfo = fetchLoggerData()
+                Log.i("PLS", logInfo.toString())
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch data", e)
             }
@@ -74,7 +75,6 @@ class LoggerFragment : Fragment() {
         for (i in calories.indices) {
             val mealCal = view.findViewById<TextView>(calories[i])
 
-            mealCal.text = logInfo.get("calPerMeal").toString()
         }
 
         for (btn in btns.indices) {
@@ -93,15 +93,16 @@ class LoggerFragment : Fragment() {
 
     }
 
-    private suspend fun fetchLoggerData(): JSONObject {
-        val url = "${BASE_URL}logger?username=johndoe"
-        val completableDeferred = CompletableDeferred<JSONObject>()
+    private suspend fun fetchLoggerData(): Logger {
+        val url = "${BASE_URL}logger?username=janedoe"
+        val completableDeferred = CompletableDeferred<Logger>()
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
-                Log.i("DATA", response.toString())
-                completableDeferred.complete(response)
+                val logged = JsonParser().parseLogger(response.toString())
+                Log.i("DATA", logged.toString())
+                completableDeferred.complete(logged)
             },
             { error ->
                 Log.e("ERROR", "Error: $error")

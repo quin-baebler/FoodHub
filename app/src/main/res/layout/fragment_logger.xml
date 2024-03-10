@@ -33,7 +33,6 @@
                     android:id="@+id/total_cal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="999 kcal"
                     android:textSize="20dp"
                     android:textColor="@color/khaki"
                     android:layout_marginStart="25dp"/>
@@ -142,13 +141,13 @@
                     <LinearLayout
                         android:id="@+id/breakfast_card"
                         android:layout_width="344dp"
-                        android:layout_height="84dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:background="@drawable/rounded_card"
                         android:layout_margin="25dp">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
@@ -172,19 +171,19 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="140dp"
+                            android:layout_marginStart="80dp"
                             android:background="@drawable/add_btn"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/lunch_card"
                         android:layout_width="344dp"
-                        android:layout_height="84dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/rounded_card"
                         android:layout_margin="25dp">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" >
 
@@ -208,19 +207,19 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="154dp"
+                            android:layout_marginStart="80dp"
                             android:background="@drawable/add_btn"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/snack_card"
                         android:layout_width="344dp"
-                        android:layout_height="84dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/rounded_card"
                         android:layout_margin="25dp">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" >
                             <TextView
@@ -243,19 +242,19 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="156dp"
+                            android:layout_marginStart="80dp"
                             android:background="@drawable/add_btn"/>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/dinner_card"
                         android:layout_width="344dp"
-                        android:layout_height="84dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/rounded_card"
                         android:layout_margin="25dp">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" >
 
@@ -279,7 +278,7 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="156dp"
+                            android:layout_marginStart="80dp"
                             android:background="@drawable/add_btn"/>
                     </LinearLayout>
                 </LinearLayout>
