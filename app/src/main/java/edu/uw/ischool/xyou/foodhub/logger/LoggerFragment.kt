@@ -1,9 +1,16 @@
 package edu.uw.ischool.xyou.foodhub.logger
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
+import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
 import edu.uw.ischool.xyou.foodhub.R
 
@@ -36,6 +43,40 @@ class LoggerFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_logger, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpCards(view)
+    }
+
+    private fun setUpCards(view: View) {
+        // there has to be a better way to do this
+        val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
+        val btns = arrayOf(R.id.breakfast_btn, R.id.lunch_btn, R.id.snack_btn, R.id.dinner_btn)
+        val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
+
+        for (i in calories.indices) {
+            val mealCal = view.findViewById<TextView>(calories[i])
+
+            //get from API later - placeholder rn
+            mealCal.text = "Calories: 500 cal"
+        }
+
+        for (btn in btns.indices) {
+            val addBtn = view.findViewById<android.widget.Button>(btns[btn])
+            addBtn.setOnClickListener{
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
+            }
+        }
+
+        for (i in cards.indices) {
+            val card = view.findViewById<LinearLayout>(cards[i])
+            card.setOnClickListener {
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, ViewLog())?.commit()
+            }
+        }
+
     }
 
     companion object {
