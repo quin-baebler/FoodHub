@@ -9,4 +9,6 @@
     <string name="password">Password</string>
     <string name="back">Back</string>
     <string name="comment_prompt">Say something…</string>
+    <string name="total_calories">Total Calories:</string>
+    <string name="add">Attach Ingredients/Recipes</string>
 </resources>
