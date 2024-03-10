@@ -10,11 +10,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import edu.uw.ischool.xyou.foodhub.R
+import edu.uw.ischool.xyou.foodhub.home.HomeFragment
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 /**
@@ -52,12 +55,20 @@ class PostFragment : Fragment() {
             val descr = descrInput.text.toString()
             val calories = caloriesInput.text.toString().toInt()
 
-            postThread(username, title, descr, calories)
+            lifecycleScope.launch {
+                val response = postThread(username!!, title, descr, calories)
+                if (response == "Post created") {
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, HomeFragment())
+                        .commit()
+                }
+            }
         }
     }
 
-    private fun postThread(username: String, title: String, descr: String, calories: Int) {
+    private suspend fun postThread(username: String, title: String, descr: String, calories: Int) : String {
         val url = "$BASE_URL/posts"
+        val completableDeferred = CompletableDeferred<String>()
 
         // create a json object
         val jsonRequest = JSONObject()
@@ -70,13 +81,20 @@ class PostFragment : Fragment() {
 
         val request = JsonObjectRequest(Request.Method.POST, url, jsonRequest,
             {response ->
+                val message = response.getString("message")
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
+                completableDeferred.complete(message)
             },
             { error ->
                 Log.e(TAG, "Error posting:", error)
-                Toast.makeText(requireContext(), "Operation failed, please try again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Operation failed, please try again", Toast.LENGTH_SHORT).show()
+
+                completableDeferred.completeExceptionally(error)
             })
 
         VolleyService.getInstance(requireActivity()).add(request)
+
+        return completableDeferred.await()
     }
 }
