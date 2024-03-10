@@ -13,4 +13,6 @@
     <color name="yellow">#ECD480</color>
     <color name="brick">#da8f7b</color>
     <color name="dark_green">#104F55</color>
+    <color name="divider">#FFD3D3D3</color>
+    <color name="grey">#FF808080</color>
 </resources>
