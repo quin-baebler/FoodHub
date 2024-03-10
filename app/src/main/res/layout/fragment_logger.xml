@@ -1,14 +1,289 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".logger.LoggerFragment">
 
-    <TextView
+    <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logger Fragment"
-        android:layout_centerInParent="true"/>
+        android:layout_height="wrap_content" >
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/logger_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/logger_title"
+                android:textSize="35dp"
+                android:textStyle="bold"
+                android:textColor="@color/khaki"
+                android:layout_margin="20dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/total_cal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textColor="@color/khaki"
+                    android:layout_marginStart="25dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="10dp">
+
+                <LinearLayout
+                    android:id="@+id/protein"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/rounded_card"
+                    android:backgroundTint="@color/silvery_pink"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Protein" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:text="333 g" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/carbs"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/rounded_card"
+                    android:backgroundTint="@color/yellow"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Carbs" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:text="333 g" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/fat"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/rounded_card"
+                    android:backgroundTint="@color/brick"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="38dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Fat" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:text="333 g" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/log"
+                    android:textColor="@color/khaki"
+                    android:textStyle="bold"
+                    android:textSize="35dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/log_cards">
+
+                    <LinearLayout
+                        android:id="@+id/breakfast_card"
+                        android:layout_width="344dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/rounded_card"
+                        android:layout_margin="25dp">
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/breakfast"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:layout_margin="10dp"/>
+
+                            <TextView
+                                android:id="@+id/breakfast_cal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"/>
+                        </LinearLayout>
+
+                        <android.widget.Button
+                            android:id="@+id/breakfast_btn"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="80dp"
+                            android:background="@drawable/add_btn"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lunch_card"
+                        android:layout_width="344dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_card"
+                        android:layout_margin="25dp">
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/lunch"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:layout_margin="10dp"/>
+
+                            <TextView
+                                android:id="@+id/lunch_cal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"/>
+                        </LinearLayout>
+
+                        <android.widget.Button
+                            android:id="@+id/lunch_btn"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="80dp"
+                            android:background="@drawable/add_btn"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/snack_card"
+                        android:layout_width="344dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_card"
+                        android:layout_margin="25dp">
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" >
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/snack"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:layout_margin="10dp"/>
+
+                            <TextView
+                                android:id="@+id/snack_cal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"/>
+                        </LinearLayout>
+
+                        <android.widget.Button
+                            android:id="@+id/snack_btn"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="80dp"
+                            android:background="@drawable/add_btn"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/dinner_card"
+                        android:layout_width="344dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_card"
+                        android:layout_margin="25dp">
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/dinner"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:layout_margin="10dp"/>
+
+                            <TextView
+                                android:id="@+id/dinner_cal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"/>
+                        </LinearLayout>
+
+                        <android.widget.Button
+                            android:id="@+id/dinner_btn"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="80dp"
+                            android:background="@drawable/add_btn"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
