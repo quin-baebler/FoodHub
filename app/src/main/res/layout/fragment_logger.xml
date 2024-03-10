@@ -3,12 +3,279 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".logger.LoggerFragment">
+    tools:context=".LoggerFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logger Fragment"
-        android:layout_centerInParent="true"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/logger_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logger_title"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            android:textColor="@color/khaki"
+            android:layout_margin="20dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/total_cal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="999 kcal"
+                android:textSize="20dp"
+                android:textColor="@color/khaki"
+                android:layout_marginStart="25dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="10dp">
+
+            <LinearLayout
+                android:id="@+id/protein"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_card"
+                android:backgroundTint="@color/silvery_pink"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Protein" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="333 g" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/carbs"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_card"
+                android:backgroundTint="@color/yellow"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Carbs" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="333 g" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fat"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_card"
+                android:backgroundTint="@color/brick"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="38dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Fat" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="333 g" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/log"
+                android:textColor="@color/khaki"
+                android:textStyle="bold"
+                android:textSize="35dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:id="@+id/breakfast_card"
+                    android:layout_width="344dp"
+                    android:layout_height="84dp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_card"
+                    android:layout_margin="25dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/breakfast"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calories: 299 cal"
+                            android:layout_marginStart="10dp"/>
+                    </LinearLayout>
+
+                    <android.widget.Button
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="140dp"
+                        android:background="@drawable/add_btn"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lunch_card"
+                    android:layout_width="344dp"
+                    android:layout_height="84dp"
+                    android:background="@drawable/rounded_card"
+                    android:layout_margin="25dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lunch"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calories: 299 cal"
+                            android:layout_marginStart="10dp"/>
+                    </LinearLayout>
+
+                    <android.widget.Button
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="154dp"
+                        android:background="@drawable/add_btn"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/snack_card"
+                    android:layout_width="344dp"
+                    android:layout_height="84dp"
+                    android:background="@drawable/rounded_card"
+                    android:layout_margin="25dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/snack"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calories: 299 cal"
+                            android:layout_marginStart="10dp"/>
+                    </LinearLayout>
+
+                    <android.widget.Button
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="156dp"
+                        android:background="@drawable/add_btn"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dinner_card"
+                    android:layout_width="344dp"
+                    android:layout_height="84dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_card"
+                    android:layout_margin="25dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dinner"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calories: 299 cal"
+                            android:layout_marginStart="10dp"/>
+                    </LinearLayout>
+
+                    <android.widget.Button
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="156dp"
+                        android:background="@drawable/add_btn"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

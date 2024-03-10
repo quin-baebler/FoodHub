@@ -5,4 +5,12 @@
     <color name="post_card">#FFF5F9F3</color>
     <color name="text">#FF969557</color>
     <color name="button">#80969557</color>
+
+    <!-- logger screens  -->
+    <color name="khaki">#969557</color>
+    <color name="transparent_khaki">#73969557</color>
+    <color name="silvery_pink">#CFB9B1</color>
+    <color name="yellow">#ECD480</color>
+    <color name="brick">#da8f7b</color>
+    <color name="dark_green">#104F55</color>
 </resources>
