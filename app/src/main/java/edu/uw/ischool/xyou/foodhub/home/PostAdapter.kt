@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.uw.ischool.xyou.foodhub.data.Post
 import edu.uw.ischool.xyou.foodhub.databinding.PostItemBinding
 
-class PostAdapter(val posts: List<Post>) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+class PostAdapter(
+    private val posts: List<Post>,
+    private val postAdapterInterface: PostAdapterInterface
+) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     inner class PostViewHolder(val binding: PostItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -23,6 +26,10 @@ class PostAdapter(val posts: List<Post>) : RecyclerView.Adapter<PostAdapter.Post
         holder.binding.apply {
             postTitle.text = posts[position].title
             postUsername.text = posts[position].username
+            likeNum.text = posts[position].likes.size.toString()
+            root.setOnClickListener {
+                postAdapterInterface.onItemClicked(posts[position])
+            }
         }
     }
 }

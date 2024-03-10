@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import edu.uw.ischool.xyou.foodhub.R
+import edu.uw.ischool.xyou.foodhub.home.HomeFragment
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import org.json.JSONObject
 
@@ -75,7 +76,8 @@ class LoginFragment : Fragment() {
                         apply()
                     }
 
-                    Toast.makeText(requireContext(), "$message, welcome $username!", Toast.LENGTH_SHORT).show()
+                    // recreate main activity
+                    requireActivity().recreate()
                 },
                 { error ->
                     // Handle login error
