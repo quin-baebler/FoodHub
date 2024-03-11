@@ -51,6 +51,11 @@ class ViewLog: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val mealName = arguments?.getString("meal")
+        val info = arguments?.getString("mealInfo")
+
+        Log.i("ALMOST", "test param: ${mealName} and info: ${info}")
+
         val itemsView = view.findViewById<ListView>(R.id.logged_items)
 
         val breakfast = listOf<ArrayList<String>>(arrayListOf("egg", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))

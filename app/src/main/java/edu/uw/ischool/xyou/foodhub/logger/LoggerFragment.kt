@@ -37,7 +37,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class LoggerFragment : Fragment() {
-    private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api"
+    private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
+
+    private var logInfo : Logger = Logger("", 0, listOf(), listOf())
+    private val viewLog = ViewLog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,42 +62,51 @@ class LoggerFragment : Fragment() {
     private fun setUpCards(view: View) {
         lifecycleScope.launch {
             try {
-                val logInfo = fetchLoggerData()
+                logInfo = fetchLoggerData()
                 Log.i("PLS", logInfo.toString())
+
+                val calPerMeal = logInfo.mealInfo
+                val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
+
+                for (i in calories.indices) {
+                    val mealCal = view.findViewById<TextView>(calories[i])
+                    mealCal.text = "Total calories: ${calPerMeal.get(i)?.mealCal} cal"
+                }
+
+                // there has to be a better way to do this
+                val btns = arrayOf(R.id.breakfast_btn, R.id.lunch_btn, R.id.snack_btn, R.id.dinner_btn)
+                val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
+
+                for (btn in btns.indices) {
+                    val addBtn = view.findViewById<android.widget.Button>(btns[btn])
+                    addBtn.setOnClickListener{
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
+                    }
+                }
+
+                val meal = arrayOf("breakfast", "lunch", "dinner", "snack")
+                val bundle = Bundle()
+                for (j in cards.indices) {
+                    bundle.putString("meal", meal[j])
+                    bundle.putString("mealInfo", logInfo.mealInfo[j].toString())
+
+                    Log.i("ALMOST", "test param: ${meal[j]} and info: ${logInfo.mealInfo[j]}")
+
+                    val card = view.findViewById<LinearLayout>(cards[j])
+                    card.setOnClickListener {
+                        viewLog.arguments = bundle
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, ViewLog())?.commit()
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch data", e)
-            }
-        }
-
-        // there has to be a better way to do this
-        val meal = arrayOf("breakfast", "lunch", "dinner", "snack")
-        val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
-        val btns = arrayOf(R.id.breakfast_btn, R.id.lunch_btn, R.id.snack_btn, R.id.dinner_btn)
-        val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
-
-        for (i in calories.indices) {
-            val mealCal = view.findViewById<TextView>(calories[i])
-
-        }
-
-        for (btn in btns.indices) {
-            val addBtn = view.findViewById<android.widget.Button>(btns[btn])
-            addBtn.setOnClickListener{
-                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
-            }
-        }
-
-        for (i in cards.indices) {
-            val card = view.findViewById<LinearLayout>(cards[i])
-            card.setOnClickListener {
-                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, ViewLog())?.commit()
             }
         }
 
     }
 
     private suspend fun fetchLoggerData(): Logger {
-        val url = "${BASE_URL}logger?username=janedoe"
+        val url = "${BASE_URL}logger?username=alicesmith"
         val completableDeferred = CompletableDeferred<Logger>()
 
         val request = JsonObjectRequest(

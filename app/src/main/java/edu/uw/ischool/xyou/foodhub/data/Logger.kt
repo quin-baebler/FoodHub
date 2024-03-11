@@ -1,9 +1,24 @@
 package edu.uw.ischool.xyou.foodhub.data
 
+import org.json.JSONObject
+
 data class Logger (
     val date: String,
-    val foodItems: HashMap<String, Pair<String, String>>,
     val totalCal: Int,
-    val calPerMeal: HashMap<String, String>,
-    val nutrition: List<String>
+    val mealInfo: List<Meal>,
+    val totalNutrition: List<Int>
+)
+
+data class Meal (
+    val mealName: String,
+    val mealCal: String,
+    val food: List<FoodItem>,
+    val nutrition: List<Int>
+)
+
+data class FoodItem (
+    val name: String,
+    val calorie: String,
+    val serving: String,
+    val nutrition: List<Int>
 )
