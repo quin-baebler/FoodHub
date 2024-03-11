@@ -10,9 +10,8 @@ import edu.uw.ischool.xyou.foodhub.home.HomeFragment
 import edu.uw.ischool.xyou.foodhub.logger.LoggerFragment
 import edu.uw.ischool.xyou.foodhub.login.LoginFragment
 import edu.uw.ischool.xyou.foodhub.post.PostFragment
-import edu.uw.ischool.xyou.foodhub.utils.FragmentNavigationListener
 
-class MainActivity : AppCompatActivity(), FragmentNavigationListener {
+class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigationListener {
         binding.bottomNavigation.visibility = View.GONE
     }
 
-    override fun replaceFragment(fragment: Fragment) {
+    fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
             .commit()
