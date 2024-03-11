@@ -114,6 +114,14 @@ class LoggerFragment : Fragment() {
                         activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, viewLog)?.commit()
                     }
                 }
+
+                val nutritionInfo = arrayOf(R.id.protein, R.id.carbs, R.id.fat)
+
+                for (nutritionTab in nutritionInfo.indices) {
+                    val section = view.findViewById<TextView>(nutritionInfo[nutritionTab])
+                    section.text = logInfo.totalNutrition[nutritionTab].toString()
+                }
+
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch data", e)
             }

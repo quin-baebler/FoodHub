@@ -98,15 +98,15 @@ class JsonParser {
         return Logger(date, totalCal, mealList, overallNutrition)
     }
 
-    fun parseFood(jsonString: String): List<Food> {
-        val foods = mutableListOf<Food>()
+    fun parseFood(jsonString: String): List<ArrayList<String>> {
+        val foods = arrayListOf<ArrayList<String>>()
         val jsonArray = JSONArray(jsonString)
         for (i in 0 until jsonArray.length()) {
             val item = jsonArray.getJSONObject(i)
             val desc = item.getString("food_description")
             val name = item.getString("food_name")
             val type = item.getString("food_type")
-            foods.add(Food(name, desc, type))
+            foods.add(arrayListOf(name, desc, type))
         }
         return foods
     }
