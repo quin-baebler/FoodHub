@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
@@ -52,20 +53,28 @@ class ViewLog: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mealName = arguments?.getString("meal")
-        val info = arguments?.getString("mealInfo")
+        val mealCal = arguments?.getString("mealCal")
+        val foodList = arrayListOf<ArrayList<String>>()
 
-        Log.i("ALMOST", "test param: ${mealName} and info: ${info}")
+        arguments?.keySet()?.forEach { key ->
+            if(key.startsWith("food_")) {
+                val oneItem = arguments?.getStringArrayList(key)
+                if (oneItem != null) {
+                    foodList.add(oneItem)
+                }
+            }
+        }
 
+        Log.i("DONE?", foodList.toString())
+
+        val title = view.findViewById<TextView>(R.id.view_log_header)
+        val cal = view.findViewById<TextView>(R.id.meal_cal)
         val itemsView = view.findViewById<ListView>(R.id.logged_items)
 
-        val breakfast = listOf<ArrayList<String>>(arrayListOf("egg", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val lunch = listOf<ArrayList<String>>(arrayListOf("lunch", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val dinner = listOf<ArrayList<String>>(arrayListOf("dinner", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val snack = listOf<ArrayList<String>>(arrayListOf("snack", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
+        title.text = mealName
+        cal.text = "Calories: ${mealCal}"
 
-        val testList = listOf<ArrayList<String>>(arrayListOf("egg", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-
-        val adapter = CustomListAdapter(requireContext(), testList, false)
+        val adapter = CustomListAdapter(requireContext(), foodList, false)
         itemsView.adapter = adapter
 
     }

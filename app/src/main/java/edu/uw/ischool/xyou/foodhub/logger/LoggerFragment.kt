@@ -84,18 +84,34 @@ class LoggerFragment : Fragment() {
                     }
                 }
 
-                val meal = arrayOf("breakfast", "lunch", "dinner", "snack")
-                val bundle = Bundle()
-                for (j in cards.indices) {
-                    bundle.putString("meal", meal[j])
-                    bundle.putString("mealInfo", logInfo.mealInfo[j].toString())
+                val meal = arrayOf("Breakfast", "Lunch", "Snack", "Dinner")
 
-                    Log.i("ALMOST", "test param: ${meal[j]} and info: ${logInfo.mealInfo[j]}")
+                for (j in cards.indices) {
+                    val bundle = Bundle()
+                    bundle.putString("meal", meal[j])
+                    bundle.putString("mealCal", logInfo.mealInfo[j].mealCal)
+                    bundle.putIntArray("nutrition", logInfo.mealInfo[j].nutrition.toIntArray())
+
+                    for (k in logInfo.mealInfo[j].food.indices) {
+                        val anItem = arrayListOf<String>()
+
+                        val foodName = logInfo.mealInfo[j].food[k].name
+                        val foodCal = logInfo.mealInfo[j].food[k].calorie
+                        val foodServing = logInfo.mealInfo[j].food[k].serving
+                        val foodNutrition = logInfo.mealInfo[j].food[k].nutrition
+
+                        anItem.add(foodName)
+                        anItem.add(foodCal)
+                        anItem.add(foodServing)
+                        anItem.add(foodNutrition.toString())
+
+                        bundle.putStringArrayList("food_${k}", anItem)
+                    }
 
                     val card = view.findViewById<LinearLayout>(cards[j])
                     card.setOnClickListener {
                         viewLog.arguments = bundle
-                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, ViewLog())?.commit()
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, viewLog)?.commit()
                     }
                 }
             } catch (e: Exception) {
