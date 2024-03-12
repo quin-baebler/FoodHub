@@ -24,6 +24,15 @@
                 android:textColor="@color/khaki"
                 android:layout_margin="20dp"/>
 
+            <TextView
+                android:id="@+id/day_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                android:textColor="@color/khaki"
+                android:layout_marginStart="22dp"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

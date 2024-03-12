@@ -77,7 +77,10 @@ class LoggerFragment : Fragment() {
 
                 val meals = logInfo.meals
 
-                Log.i("TIRED", meals.toString())
+                Log.i("TIRED", logInfo.toString())
+
+                val todayCalories = view.findViewById<TextView>(R.id.day_calories)
+                todayCalories.text = "${logInfo.totalCal.toString()} cal"
 
                 val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
 
