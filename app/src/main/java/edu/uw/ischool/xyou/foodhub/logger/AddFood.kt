@@ -49,6 +49,8 @@ class AddFood: Fragment() {
 
         Log.i(TAG, "onViewCreated: $isFromPostFragment")
 
+        val mealName = arguments?.getString("meal")
+
         searchBar = view.findViewById<EditText>(R.id.search_bar)
         val searchBtn = view.findViewById<Button>(R.id.search_btn)
 
@@ -56,7 +58,7 @@ class AddFood: Fragment() {
         searchBtn.setOnClickListener{
             lifecycleScope.launch {
                 try {
-                    findFood(view, searchBar.text.toString())
+                    findFood(view, searchBar.text.toString(), mealName!!)
                 } catch (e: Exception) {
                     Log.e("ERROR", "Failed to fetch data", e)
                 }
@@ -64,7 +66,7 @@ class AddFood: Fragment() {
         }
     }
 
-    private suspend fun findFood(view : View, input: String): List<FoodItem> {
+    private suspend fun findFood(view : View, input: String, mealName: String): List<FoodItem> {
         val url = "${BASEURL}logger/search/${input}"
         val completableDeferred = CompletableDeferred<List<FoodItem>>()
 
@@ -74,7 +76,7 @@ class AddFood: Fragment() {
                 val data = JsonParser().parseSearchFood(response.toString())
                 Log.i("DATA", "res: $data")
                 completableDeferred.complete(data)
-                showRes(view, data)
+                showRes(view, data, mealName)
             },
             { error ->
                 Log.e("ERROR", "Error: $error")
@@ -86,10 +88,10 @@ class AddFood: Fragment() {
         return completableDeferred.await()
     }
 
-    private fun showRes(view: View, itemsList: List<FoodItem>) {
+    private fun showRes(view: View, itemsList: List<FoodItem>, meal: String) {
         val itemsView = view.findViewById<ListView>(R.id.results)
 
-        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, "", isFromPostFragment)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, meal, isFromPostFragment)
 
         itemsView.adapter = adapter
     }

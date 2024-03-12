@@ -45,6 +45,7 @@ class LoggerFragment : Fragment() {
 
     private var logInfo : Logger = Logger("", "", arrayListOf(), hashMapOf(), 0)
     private val viewLog = ViewLog()
+    private val addFood = AddFood()
     private var totalProtein = 0.0
     private var totalCarbs = 0.0
     private var totalFat = 0.0
@@ -101,9 +102,12 @@ class LoggerFragment : Fragment() {
                 val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
 
                 for (btn in btns.indices) {
+                    val bundle = Bundle()
+                    bundle.putString("meal", meal[btn])
                     val addBtn = view.findViewById<android.widget.Button>(btns[btn])
                     addBtn.setOnClickListener{
-                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
+                        addFood.arguments = bundle
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, addFood)?.commit()
                     }
                 }
 

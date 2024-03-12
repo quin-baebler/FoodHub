@@ -76,7 +76,7 @@ class CustomListAdapter(
                         if (isFromPostFragment) {
                             addFoodToPost(currentItem)
                         } else {
-                            val canAddFood = addFood(username!!, "breakfast", currentItem)
+                            val canAddFood = addFood(username!!, mealTitle, currentItem)
                             if(canAddFood){
                                 Toast.makeText(context, "Successfully added the food item", Toast.LENGTH_SHORT).show()
                             }else{
@@ -165,7 +165,7 @@ class CustomListAdapter(
             put("foodItem", foodItemJSON)
             put("meal", meal)
         }
-
+        
         Log.i("ALMOST", params.toString())
 
         val request = JsonObjectRequest(
