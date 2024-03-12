@@ -56,7 +56,7 @@ class PostFragment : Fragment() {
             val calories = caloriesInput.text.toString().toInt()
 
             lifecycleScope.launch {
-                val response = postThread(username!!, title, descr, calories)
+                val response = createPost(username!!, title, descr, calories)
                 if (response == "Post created") {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .replace(R.id.container, HomeFragment())
@@ -66,7 +66,7 @@ class PostFragment : Fragment() {
         }
     }
 
-    private suspend fun postThread(username: String, title: String, descr: String, calories: Int) : String {
+    private suspend fun createPost(username: String, title: String, descr: String, calories: Int) : String {
         val url = "$BASE_URL/posts"
         val completableDeferred = CompletableDeferred<String>()
 

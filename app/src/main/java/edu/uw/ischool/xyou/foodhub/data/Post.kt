@@ -7,6 +7,6 @@ data class Post (
     val calories: Int,
     val descr: String,
     val date: String,
-    val recipeIds: List<String>,
+    val foodIds: List<String>,
     val likes: List<String>
 )

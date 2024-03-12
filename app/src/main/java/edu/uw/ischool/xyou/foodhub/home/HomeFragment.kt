@@ -77,7 +77,7 @@ class HomeFragment : Fragment(), PostAdapterInterface {
             putExtra("calories", post.calories)
             putExtra("date", post.date)
             putExtra("descr", post.descr)
-            putExtra("recipeIds", post.recipeIds as ArrayList<String>)
+            putExtra("recipeIds", post.foodIds as ArrayList<String>)
             putExtra("likes", post.likes as ArrayList<String>)
         }
         startActivity(intent)
