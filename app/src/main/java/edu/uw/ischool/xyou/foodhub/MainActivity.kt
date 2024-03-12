@@ -3,8 +3,10 @@ package edu.uw.ischool.xyou.foodhub
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.databinding.ActivityMainBinding
 import edu.uw.ischool.xyou.foodhub.home.HomeFragment
 import edu.uw.ischool.xyou.foodhub.logger.LoggerFragment

@@ -67,6 +67,8 @@ class JsonParser {
     }
 
     fun parseFood(food: JSONObject): FoodItem {
+        Log.i("ParseFood", "parseFood: wrong")
+        val foodId = food.getString("foodId")
         val name = food.getString("name")
         val calories = food.getInt("calories")
         val serving = food.getString("serving")
@@ -75,7 +77,7 @@ class JsonParser {
         val fat = food.getDouble("fat")
         val id = food.getString("foodId")
 
-        return FoodItem(name, id, calories, serving, protein, carbs, fat)
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 
     fun parseSearchFood(jsonString: String): List<FoodItem> {
@@ -84,15 +86,16 @@ class JsonParser {
         val jsonArray = obj.getJSONArray("info")
         for (i in 0 until jsonArray.length()) {
             val food = jsonArray.getJSONObject(i)
+            Log.i("DATA", "parseSearchFood: $jsonArray")
+            val foodId = food.getString("food_id")
             val name = food.getString("food_name")
             val desc = food.getString("food_description")
-            val id = food.getString("food_id")
-            resList.add(parseDesc(name, desc, id))
+            resList.add(parseDesc(foodId, name, desc))
         }
         return resList
     }
 
-    fun parseDesc(name: String, desc: String, id: String): FoodItem {
+    fun parseDesc(foodId: String, name: String, desc: String): FoodItem {
         var serving = "N/A"
         var calories = 0
         var fat = 0.0
@@ -111,7 +114,7 @@ class JsonParser {
             protein = matchResult.groupValues[5].toDouble()
         }
 
-        return FoodItem(name, id, calories, serving, protein, carbs, fat)
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 
     fun parseComments(jsonString: String): List<Comment> {
@@ -126,5 +129,17 @@ class JsonParser {
             comments.add(Comment(commentId, username, comment, date))
         }
         return comments
+    }
+
+    fun parseFoodInfo(jsonString: String): FoodItem {
+        val food = JSONObject(jsonString)
+        val foodId = food.getString("foodId")
+        val name = food.getString("name")
+        val calories = food.getInt("calories")
+        val serving = food.getString("serving")
+        val protein = food.getDouble("protein")
+        val carbs = food.getDouble("carbs")
+        val fat = food.getDouble("fat")
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 }

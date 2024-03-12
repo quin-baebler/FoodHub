@@ -49,10 +49,6 @@ class LoggerFragment : Fragment() {
     private var totalCarbs = 0.0
     private var totalFat = 0.0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -21,24 +21,18 @@ import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class AddFood: Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private val TAG = "AddFood"
     lateinit var searchBar : EditText
     private val BASEURL = "https://foodhub-backend.azurewebsites.net/api/"
+
+    private var isFromPostFragment: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            // Retrieve the data using the same key as when setting the arguments
+            isFromPostFragment = it.getBoolean("isFromPostFragment")
         }
     }
 
@@ -52,6 +46,8 @@ class AddFood: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.i(TAG, "onViewCreated: $isFromPostFragment")
 
         searchBar = view.findViewById<EditText>(R.id.search_bar)
         val searchBtn = view.findViewById<Button>(R.id.search_btn)
@@ -93,7 +89,8 @@ class AddFood: Fragment() {
     private fun showRes(view: View, itemsList: List<FoodItem>) {
         val itemsView = view.findViewById<ListView>(R.id.results)
 
-        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, "")
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, "", isFromPostFragment)
+
         itemsView.adapter = adapter
     }
 }

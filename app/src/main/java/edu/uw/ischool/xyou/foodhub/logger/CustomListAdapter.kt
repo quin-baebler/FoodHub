@@ -2,6 +2,7 @@ package edu.uw.ischool.xyou.foodhub.logger
 
 import android.app.Activity
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import edu.uw.ischool.xyou.foodhub.MainActivity
 import edu.uw.ischool.xyou.foodhub.R
 import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.data.Logger
+import edu.uw.ischool.xyou.foodhub.post.PostFragment
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
@@ -31,7 +33,10 @@ class CustomListAdapter(
     val itemList: List<FoodItem>,
     val isAddFood: Boolean,
     val mealTitle: String
+    val isFromPostFragment: Boolean
+
 ) : ArrayAdapter<FoodItem>(context, R.layout.list_item_layout, itemList) {
+    private val TAG = "CustomListAdapter"
     private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
@@ -68,12 +73,15 @@ class CustomListAdapter(
             btn?.setOnClickListener{
                 lifecycleScope.launch {
                     try {
-                        val canAddFood = addFood(username!!, "breakfast", currentItem)
-
-                        if(canAddFood){
-                            Toast.makeText(context, "Successfully added the food item", Toast.LENGTH_SHORT).show()
-                        }else{
-                            Toast.makeText(context, "Failed to add food. Try again later", Toast.LENGTH_SHORT).show()
+                        if (isFromPostFragment) {
+                            addFoodToPost(currentItem)
+                        } else {
+                            val canAddFood = addFood(username!!, "breakfast", currentItem)
+                            if(canAddFood){
+                                Toast.makeText(context, "Successfully added the food item", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(context, "Failed to add food. Try again later", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
@@ -86,13 +94,15 @@ class CustomListAdapter(
                 //delete the food from db
                 lifecycleScope.launch {
                     try {
-                        val canDelete = deleteFood(username!!, mealTitle, currentItem.foodId)
-
-                        if(canDelete){
-                            Toast.makeText(context, "Successfully deleted the food item", Toast.LENGTH_SHORT).show()
-                        }else{
-                            Toast.makeText(context, "Failed to delete food. Try again later", Toast.LENGTH_SHORT).show()
-                        }
+                        if (isFromPostFragment) {
+                            // deleteFoodFromPost(currentItem)
+                        } else {
+                            val canDelete = deleteFood(username!!, mealTitle, currentItem.foodId)
+                            if(canDelete){
+                                Toast.makeText(context, "Successfully deleted the food item", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(context, "Failed to delete food. Try again later", Toast.LENGTH_SHORT).show()
+                            }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -164,5 +174,17 @@ class CustomListAdapter(
         VolleyService.getInstance(activity).add(request)
 
         return completableDeferred.await()
+    }
+
+    private fun addFoodToPost(foodItem: FoodItem) {
+        // restart the post fragment with foodItem
+        val postFragment = PostFragment()
+        val bundle = Bundle().apply {
+            putString("foodItem", Gson().toJson(foodItem))
+        }
+        postFragment.arguments = bundle
+        (activity as MainActivity).supportFragmentManager.beginTransaction()
+            .replace(R.id.container, postFragment)
+            .commit()
     }
 }
