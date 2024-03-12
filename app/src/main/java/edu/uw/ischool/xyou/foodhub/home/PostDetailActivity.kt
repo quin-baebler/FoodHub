@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.SimpleAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
@@ -27,6 +26,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import androidx.recyclerview.widget.RecyclerView
+import edu.uw.ischool.xyou.foodhub.data.Food
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -43,7 +43,7 @@ class PostDetailActivity : AppCompatActivity() {
         val calories = intent.getIntExtra("calories", 0)
         val descr = intent.getStringExtra("descr")
         val date = intent.getStringExtra("date")
-        val recipeIds = intent.getStringArrayListExtra("recipeIds")
+        val foodIds = intent.getStringArrayListExtra("foodIds")
         val likes = intent.getStringArrayListExtra("likes")
 
         val sharedPreferences = getSharedPreferences("userData", Context.MODE_PRIVATE)
@@ -54,7 +54,8 @@ class PostDetailActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
         progressBar.visibility = View.VISIBLE
 
-        reloadComments(postId!!, progressBar)
+//        loadFoodItems(foodIds!!, progressBar)
+        loadComments(postId!!, progressBar)
 
         val commentInput = findViewById<EditText>(R.id.comment_input)
         val sendButton = findViewById<Button>(R.id.submit_comment_button)
@@ -109,7 +110,24 @@ class PostDetailActivity : AppCompatActivity() {
         VolleyService.getInstance(this).add(request)
     }
 
-    private fun reloadComments(postId: String, progressBar: ProgressBar) {
+//    private fun loadFoodItems(foodIds: ArrayList<String>, progressBar: ProgressBar) {
+//        lifecycleScope.launch {
+//            try {
+//                val foodItems = fetchFoodItems(foodIds)
+//
+//                val recyclerView = findViewById<RecyclerView>(R.id.food_list)
+//                recyclerView.adapter = FoodAdapter(foodItems)
+//                recyclerView.layoutManager = LinearLayoutManager(this@PostDetailActivity)
+//
+//                progressBar.visibility = View.GONE
+//            } catch (e: Exception) {
+//                Toast.makeText(this@PostDetailActivity, "Error loading food items, please try again", Toast.LENGTH_SHORT).show()
+//                progressBar.visibility = View.GONE
+//            }
+//        }
+//    }
+
+    private fun loadComments(postId: String, progressBar: ProgressBar) {
         lifecycleScope.launch {
             try {
                 val comments = fetchComments(postId)
@@ -147,6 +165,26 @@ class PostDetailActivity : AppCompatActivity() {
         likesTextView.text = likes.size.toString().toInt().toString()
     }
 
+    private suspend fun fetchFoodItems(foodIds: ArrayList<String>): List<Food> {
+        val url = "$BASE_URL/foods"
+        val completableDeferred = CompletableDeferred<List<Food>>()
+
+        val request = JsonArrayRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                val foodItems = JsonParser().parseFood(response.toString())
+                completableDeferred.complete(foodItems)
+            },
+            { error ->
+                Log.e(TAG, "Error: $error")
+                completableDeferred.completeExceptionally(error)
+            }
+        )
+        VolleyService.getInstance(this).add(request)
+
+        return completableDeferred.await()
+    }
+
     private suspend fun fetchComments(postId: String): List<Comment> {
         val url = "$BASE_URL/posts/comments?postId=$postId"
         val completableDeferred = CompletableDeferred<List<Comment>>()
@@ -181,7 +219,7 @@ class PostDetailActivity : AppCompatActivity() {
             {response ->
                 Toast.makeText(this, "Comment added", Toast.LENGTH_SHORT).show()
                 progressBar.visibility = View.VISIBLE
-                reloadComments(postId, progressBar)
+                loadComments(postId, progressBar)
             },
             { error ->
                 Log.e(TAG, "Error posting:", error)
