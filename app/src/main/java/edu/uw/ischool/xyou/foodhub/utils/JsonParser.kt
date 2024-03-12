@@ -67,6 +67,7 @@ class JsonParser {
     }
 
     fun parseFood(food: JSONObject): FoodItem {
+        Log.i("ParseFood", "parseFood: wrong")
         val foodId = food.getString("foodId")
         val name = food.getString("name")
         val calories = food.getInt("calories")
@@ -127,5 +128,17 @@ class JsonParser {
             comments.add(Comment(commentId, username, comment, date))
         }
         return comments
+    }
+
+    fun parseFoodInfo(jsonString: String): FoodItem {
+        val food = JSONObject(jsonString)
+        val foodId = food.getString("foodId")
+        val name = food.getString("name")
+        val calories = food.getInt("calories")
+        val serving = food.getString("serving")
+        val protein = food.getDouble("protein")
+        val carbs = food.getDouble("carbs")
+        val fat = food.getDouble("fat")
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 }

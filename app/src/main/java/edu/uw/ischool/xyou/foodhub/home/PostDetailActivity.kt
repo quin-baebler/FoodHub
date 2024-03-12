@@ -26,7 +26,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import androidx.recyclerview.widget.RecyclerView
-//import edu.uw.ischool.xyou.foodhub.data.Food
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -43,7 +43,7 @@ class PostDetailActivity : AppCompatActivity() {
         val calories = intent.getIntExtra("calories", 0)
         val descr = intent.getStringExtra("descr")
         val date = intent.getStringExtra("date")
-        val foodIds = intent.getStringArrayListExtra("foodIds")
+        val foodIds = intent.getStringArrayListExtra("recipeIds")
         val likes = intent.getStringArrayListExtra("likes")
 
         val sharedPreferences = getSharedPreferences("userData", Context.MODE_PRIVATE)
@@ -54,7 +54,9 @@ class PostDetailActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
         progressBar.visibility = View.VISIBLE
 
-//        loadFoodItems(foodIds!!, progressBar)
+        if (foodIds?.size != 0) {
+            loadFoodItems(foodIds!!, progressBar)
+        }
         loadComments(postId!!, progressBar)
 
         val commentInput = findViewById<EditText>(R.id.comment_input)
@@ -109,24 +111,7 @@ class PostDetailActivity : AppCompatActivity() {
 
         VolleyService.getInstance(this).add(request)
     }
-
-//    private fun loadFoodItems(foodIds: ArrayList<String>, progressBar: ProgressBar) {
-//        lifecycleScope.launch {
-//            try {
-//                val foodItems = fetchFoodItems(foodIds)
-//
-//                val recyclerView = findViewById<RecyclerView>(R.id.food_list)
-//                recyclerView.adapter = FoodAdapter(foodItems)
-//                recyclerView.layoutManager = LinearLayoutManager(this@PostDetailActivity)
-//
-//                progressBar.visibility = View.GONE
-//            } catch (e: Exception) {
-//                Toast.makeText(this@PostDetailActivity, "Error loading food items, please try again", Toast.LENGTH_SHORT).show()
-//                progressBar.visibility = View.GONE
-//            }
-//        }
-//    }
-
+    
     private fun loadComments(postId: String, progressBar: ProgressBar) {
         lifecycleScope.launch {
             try {
@@ -139,6 +124,23 @@ class PostDetailActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
             } catch (e: Exception) {
                 Toast.makeText(this@PostDetailActivity, "Error loading comments, please try again", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun loadFoodItems(foodIds: ArrayList<String>, progressBar: ProgressBar) {
+        lifecycleScope.launch {
+            try {
+                val foods = fetchFoodItems(foodIds)
+
+                val recyclerView = findViewById<RecyclerView>(R.id.food_list)
+                recyclerView.adapter = FoodAdapter(foods)
+                recyclerView.layoutManager = LinearLayoutManager(this@PostDetailActivity, LinearLayoutManager.HORIZONTAL, false)
+
+                progressBar.visibility = View.GONE
+            } catch (e: Exception) {
+                Toast.makeText(this@PostDetailActivity, "Error loading food items, please try again", Toast.LENGTH_SHORT).show()
                 progressBar.visibility = View.GONE
             }
         }
@@ -164,26 +166,7 @@ class PostDetailActivity : AppCompatActivity() {
         })
         likesTextView.text = likes.size.toString().toInt().toString()
     }
-
-//    private suspend fun fetchFoodItems(foodIds: ArrayList<String>): List<Food> {
-//        val url = "$BASE_URL/foods"
-//        val completableDeferred = CompletableDeferred<List<Food>>()
-//
-//        val request = JsonArrayRequest(
-//            Request.Method.GET, url, null,
-//            { response ->
-//                val foodItems = JsonParser().parseFood(response.toString())
-//                completableDeferred.complete(foodItems)
-//            },
-//            { error ->
-//                Log.e(TAG, "Error: $error")
-//                completableDeferred.completeExceptionally(error)
-//            }
-//        )
-//        VolleyService.getInstance(this).add(request)
-//
-//        return completableDeferred.await()
-//    }
+    
 
     private suspend fun fetchComments(postId: String): List<Comment> {
         val url = "$BASE_URL/posts/comments?postId=$postId"
@@ -201,6 +184,35 @@ class PostDetailActivity : AppCompatActivity() {
             }
         )
         VolleyService.getInstance(this).add(request)
+
+        return completableDeferred.await()
+    }
+
+    private suspend fun fetchFoodItems(foodIds: ArrayList<String>): List<FoodItem> {
+        val url = "$BASE_URL/logger/foodInfo"
+        val completableDeferred = CompletableDeferred<List<FoodItem>>()
+
+        val foodItems = mutableListOf<FoodItem>()
+        for (foodId in foodIds) {
+            val requestJson = JSONObject().apply {
+                put("foodId", foodId)
+            }
+            val request = JsonObjectRequest(
+                Request.Method.POST, url, requestJson,
+                { response ->
+                    val foodItem = JsonParser().parseFoodInfo(response.toString())
+                    foodItems.add(foodItem)
+                    if (foodItems.size == foodIds.size) {
+                        completableDeferred.complete(foodItems)
+                    }
+                },
+                { error ->
+                    Log.e(TAG, "Error: $error")
+                    completableDeferred.completeExceptionally(error)
+                }
+            )
+            VolleyService.getInstance(this).add(request)
+        }
 
         return completableDeferred.await()
     }

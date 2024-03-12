@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
 import edu.uw.ischool.xyou.foodhub.MainActivity
 import edu.uw.ischool.xyou.foodhub.R
 import edu.uw.ischool.xyou.foodhub.data.FoodItem
@@ -161,7 +162,7 @@ class CustomListAdapter(
         // restart the post fragment with foodItem
         val postFragment = PostFragment()
         val bundle = Bundle().apply {
-            putString("foodItem", foodItem.toString())
+            putString("foodItem", Gson().toJson(foodItem))
         }
         postFragment.arguments = bundle
         (activity as MainActivity).supportFragmentManager.beginTransaction()
