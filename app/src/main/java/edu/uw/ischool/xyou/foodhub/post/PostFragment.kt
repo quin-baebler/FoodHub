@@ -8,13 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import edu.uw.ischool.xyou.foodhub.R
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.home.HomeFragment
+import edu.uw.ischool.xyou.foodhub.logger.AddFood
+import edu.uw.ischool.xyou.foodhub.logger.CustomListAdapter
+import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
@@ -43,6 +49,14 @@ class PostFragment : Fragment() {
         val sharedPreferences = requireActivity().getSharedPreferences("userData", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", "User")
 
+        // get data from another fragment if there is any
+        val foodItem = arguments?.getString("foodItem")
+        Log.i(TAG, "onViewCreated: $foodItem")
+
+        foodItem?.let {
+            renderFoodItems(view, foodItem)
+        }
+
         // collect user input
         val titleInput = view.findViewById<EditText>(R.id.title_input)
         val descrInput = view.findViewById<EditText>(R.id.descr_input)
@@ -63,6 +77,13 @@ class PostFragment : Fragment() {
                         .commit()
                 }
             }
+        }
+
+        val addFoodButton = view.findViewById<ImageView>(R.id.add_btn)
+        addFoodButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container, AddFood().apply { arguments = Bundle().apply { putBoolean("isFromPostFragment", true) } })
+                .commit()
         }
     }
 
@@ -96,5 +117,14 @@ class PostFragment : Fragment() {
         VolleyService.getInstance(requireActivity()).add(request)
 
         return completableDeferred.await()
+    }
+
+    private fun renderFoodItems(view: View, foodItem: String) {
+//        val itemsList = JsonParser().parseSearchFood(foodItem)
+
+//        val itemsView = view.findViewById<ListView>(R.id.results)
+
+//        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, false, true)
+//        itemsView.adapter = adapter
     }
 }

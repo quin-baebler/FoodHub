@@ -62,7 +62,7 @@ class ViewLog: Fragment() {
         title.text = hateKotlin[mealName]
         cal.text = "Calories: ${mealCal}"
 
-        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false, false)
         itemsView.adapter = adapter
 
     }

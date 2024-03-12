@@ -26,7 +26,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import androidx.recyclerview.widget.RecyclerView
-import edu.uw.ischool.xyou.foodhub.data.Food
+//import edu.uw.ischool.xyou.foodhub.data.Food
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -165,25 +165,25 @@ class PostDetailActivity : AppCompatActivity() {
         likesTextView.text = likes.size.toString().toInt().toString()
     }
 
-    private suspend fun fetchFoodItems(foodIds: ArrayList<String>): List<Food> {
-        val url = "$BASE_URL/foods"
-        val completableDeferred = CompletableDeferred<List<Food>>()
-
-        val request = JsonArrayRequest(
-            Request.Method.GET, url, null,
-            { response ->
-                val foodItems = JsonParser().parseFood(response.toString())
-                completableDeferred.complete(foodItems)
-            },
-            { error ->
-                Log.e(TAG, "Error: $error")
-                completableDeferred.completeExceptionally(error)
-            }
-        )
-        VolleyService.getInstance(this).add(request)
-
-        return completableDeferred.await()
-    }
+//    private suspend fun fetchFoodItems(foodIds: ArrayList<String>): List<Food> {
+//        val url = "$BASE_URL/foods"
+//        val completableDeferred = CompletableDeferred<List<Food>>()
+//
+//        val request = JsonArrayRequest(
+//            Request.Method.GET, url, null,
+//            { response ->
+//                val foodItems = JsonParser().parseFood(response.toString())
+//                completableDeferred.complete(foodItems)
+//            },
+//            { error ->
+//                Log.e(TAG, "Error: $error")
+//                completableDeferred.completeExceptionally(error)
+//            }
+//        )
+//        VolleyService.getInstance(this).add(request)
+//
+//        return completableDeferred.await()
+//    }
 
     private suspend fun fetchComments(postId: String): List<Comment> {
         val url = "$BASE_URL/posts/comments?postId=$postId"

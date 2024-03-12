@@ -2,6 +2,7 @@ package edu.uw.ischool.xyou.foodhub.logger
 
 import android.app.Activity
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import edu.uw.ischool.xyou.foodhub.MainActivity
 import edu.uw.ischool.xyou.foodhub.R
 import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.data.Logger
+import edu.uw.ischool.xyou.foodhub.post.PostFragment
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
@@ -27,8 +29,10 @@ class CustomListAdapter(
     val activity: Activity,
     val lifecycleScope: LifecycleCoroutineScope,
     val itemList: List<FoodItem>,
-    val isAddFood: Boolean
+    val isAddFood: Boolean,
+    val isFromPostFragment: Boolean
 ) : ArrayAdapter<FoodItem>(context, R.layout.list_item_layout, itemList) {
+    private val TAG = "CustomListAdapter"
     private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
@@ -62,7 +66,11 @@ class CustomListAdapter(
             btn?.setOnClickListener{
                 lifecycleScope.launch {
                     try {
-//                        addFood(currentItem, activity)
+                        if (isFromPostFragment) {
+                            addFoodToPost(currentItem)
+                        } else {
+                            // addFood(currentItem, activity)
+                        }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -74,7 +82,11 @@ class CustomListAdapter(
                 //delete the food from db
                 lifecycleScope.launch {
                     try {
-                        deleteFood("allison", "breakfast", currentItem.name)
+                        if (isFromPostFragment) {
+                            // deleteFoodFromPost(currentItem)
+                        } else {
+                            deleteFood("allison", "breakfast", currentItem.name)
+                        }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -145,4 +157,15 @@ class CustomListAdapter(
 //        return completableDeferred.await()
 //    }
 
+    private fun addFoodToPost(foodItem: FoodItem) {
+        // restart the post fragment with foodItem
+        val postFragment = PostFragment()
+        val bundle = Bundle().apply {
+            putString("foodItem", foodItem.toString())
+        }
+        postFragment.arguments = bundle
+        (activity as MainActivity).supportFragmentManager.beginTransaction()
+            .replace(R.id.container, postFragment)
+            .commit()
+    }
 }

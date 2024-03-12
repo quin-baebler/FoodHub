@@ -67,6 +67,7 @@ class JsonParser {
     }
 
     fun parseFood(food: JSONObject): FoodItem {
+        val foodId = food.getString("foodId")
         val name = food.getString("name")
         val calories = food.getInt("calories")
         val serving = food.getString("serving")
@@ -74,7 +75,7 @@ class JsonParser {
         val carbs = food.getDouble("carbs")
         val fat = food.getDouble("fat")
 
-        return FoodItem(name, calories, serving, protein, carbs, fat)
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 
     fun parseSearchFood(jsonString: String): List<FoodItem> {
@@ -83,14 +84,16 @@ class JsonParser {
         val jsonArray = obj.getJSONArray("info")
         for (i in 0 until jsonArray.length()) {
             val food = jsonArray.getJSONObject(i)
+            Log.i("DATA", "parseSearchFood: $jsonArray")
+            val foodId = food.getString("food_id")
             val name = food.getString("food_name")
             val desc = food.getString("food_description")
-            resList.add(parseDesc(name, desc))
+            resList.add(parseDesc(foodId, name, desc))
         }
         return resList
     }
 
-    fun parseDesc(name: String, desc: String): FoodItem {
+    fun parseDesc(foodId: String, name: String, desc: String): FoodItem {
         var serving = "N/A"
         var calories = 0
         var fat = 0.0
@@ -109,7 +112,7 @@ class JsonParser {
             protein = matchResult.groupValues[5].toDouble()
         }
 
-        return FoodItem(name, calories, serving, protein, carbs, fat)
+        return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }
 
     fun parseComments(jsonString: String): List<Comment> {
