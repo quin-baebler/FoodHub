@@ -58,7 +58,7 @@ class AddFood: Fragment() {
         searchBtn.setOnClickListener{
             lifecycleScope.launch {
                 try {
-                    findFood(view, searchBar.text.toString(), mealName!!)
+                    findFood(view, searchBar.text.toString(), mealName)
                 } catch (e: Exception) {
                     Log.e("ERROR", "Failed to fetch data", e)
                 }
@@ -66,7 +66,7 @@ class AddFood: Fragment() {
         }
     }
 
-    private suspend fun findFood(view : View, input: String, mealName: String): List<FoodItem> {
+    private suspend fun findFood(view : View, input: String, mealName: String?): List<FoodItem> {
         val url = "${BASEURL}logger/search/${input}"
         val completableDeferred = CompletableDeferred<List<FoodItem>>()
 
@@ -76,7 +76,12 @@ class AddFood: Fragment() {
                 val data = JsonParser().parseSearchFood(response.toString())
                 Log.i("DATA", "res: $data")
                 completableDeferred.complete(data)
-                showRes(view, data, mealName)
+
+                if(mealName != null) {
+                    showRes(view, data, mealName)
+                }else{
+                    showRes(view, data, "")
+                }
             },
             { error ->
                 Log.e("ERROR", "Error: $error")
