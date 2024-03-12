@@ -22,14 +22,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // get preferences
-//        val sharedPreferences = getSharedPreferences("userData", Context.MODE_PRIVATE)
-//        if (sharedPreferences.contains("username")) {
-//            replaceFragment(HomeFragment())
-//        } else {
-//            replaceFragment(LoginFragment())
-//            hideNavigationBar()
-//        }
-        replaceFragment(LoggerFragment())
+        val sharedPreferences = getSharedPreferences("userData", Context.MODE_PRIVATE)
+        if (sharedPreferences.contains("username")) {
+            replaceFragment(HomeFragment())
+        } else {
+            replaceFragment(LoginFragment())
+            hideNavigationBar()
+        }
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {

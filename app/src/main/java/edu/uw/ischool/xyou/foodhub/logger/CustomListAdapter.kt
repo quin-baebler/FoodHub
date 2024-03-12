@@ -28,7 +28,8 @@ class CustomListAdapter(
     val activity: Activity,
     val lifecycleScope: LifecycleCoroutineScope,
     val itemList: List<FoodItem>,
-    val isAddFood: Boolean
+    val isAddFood: Boolean,
+    val mealTitle: String
 ) : ArrayAdapter<FoodItem>(context, R.layout.list_item_layout, itemList) {
     private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -36,6 +37,9 @@ class CustomListAdapter(
         if (itemView == null) {
             itemView = LayoutInflater.from(context).inflate(R.layout.list_item_layout, parent, false)
         }
+
+        val sharedPreferences = activity.getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "User")
 
         val currentItem = itemList[position]
         val title = itemView?.findViewById<TextView>(R.id.food_name)
@@ -63,7 +67,7 @@ class CustomListAdapter(
             btn?.setOnClickListener{
                 lifecycleScope.launch {
                     try {
-                        addFood("allison", "breakfast", currentItem)
+                        addFood(username!!, "breakfast", currentItem)
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -75,7 +79,7 @@ class CustomListAdapter(
                 //delete the food from db
                 lifecycleScope.launch {
                     try {
-                        deleteFood("allison", "lunch", currentItem.foodId)
+                        deleteFood(username!!, mealTitle, currentItem.foodId)
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -89,7 +93,7 @@ class CustomListAdapter(
         val url = "${BASE_URL}logger/delete"
         val completableDeferred = CompletableDeferred<Boolean>()
 
-        Log.i("DATA", "given id: ${foodItem}")
+        Log.i("DATA", "meal: ${meal}")
 
         val params = JSONObject().apply {
             // Add your body parameters here
@@ -97,6 +101,8 @@ class CustomListAdapter(
             put("foodId", foodItem)
             put("meal", meal)
         }
+
+        Log.i("SHIT", "delete params: ${params.toString()}")
 
         val request = JsonObjectRequest(
             Request.Method.POST, url, params,
@@ -129,6 +135,8 @@ class CustomListAdapter(
             put("foodItem", foodItemJSON)
             put("meal", meal)
         }
+
+        Log.i("SHIT", params.toString())
 
         val request = JsonObjectRequest(
             Request.Method.POST, url, params,

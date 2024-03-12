@@ -47,6 +47,10 @@ class ViewLog: Fragment() {
         val mealCal = arguments?.getInt("mealCal")
         val foodListStr = arguments?.getString("foodList")
 
+        if (foodListStr != null) {
+            Log.i("BUT", foodListStr)
+        }
+
         // Convert JSON string back to FoodItem list
         val foodListType = object : TypeToken<List<FoodItem>>() {}.type
         val foodList = Gson().fromJson<List<FoodItem>>(foodListStr, foodListType)
@@ -62,7 +66,7 @@ class ViewLog: Fragment() {
         title.text = hateKotlin[mealName]
         cal.text = "Calories: ${mealCal}"
 
-        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false, mealName!!)
         itemsView.adapter = adapter
 
     }
