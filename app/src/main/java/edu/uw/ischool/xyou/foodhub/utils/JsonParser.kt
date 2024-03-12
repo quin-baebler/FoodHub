@@ -75,6 +75,7 @@ class JsonParser {
         val protein = food.getDouble("protein")
         val carbs = food.getDouble("carbs")
         val fat = food.getDouble("fat")
+        val id = food.getString("foodId")
 
         return FoodItem(foodId, name, calories, serving, protein, carbs, fat)
     }

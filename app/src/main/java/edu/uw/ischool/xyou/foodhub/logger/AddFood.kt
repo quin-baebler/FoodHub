@@ -54,11 +54,9 @@ class AddFood: Fragment() {
 
 
         searchBtn.setOnClickListener{
-            Log.i("TEST", "button clicked")
             lifecycleScope.launch {
                 try {
-                    val searchRes = findFood(view, searchBar.text.toString())
-//                    Log.i("TEST", searchRes.toString())
+                    findFood(view, searchBar.text.toString())
                 } catch (e: Exception) {
                     Log.e("ERROR", "Failed to fetch data", e)
                 }
@@ -91,7 +89,8 @@ class AddFood: Fragment() {
     private fun showRes(view: View, itemsList: List<FoodItem>) {
         val itemsView = view.findViewById<ListView>(R.id.results)
 
-        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, isFromPostFragment)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true, "", isFromPostFragment)
+
         itemsView.adapter = adapter
     }
 }

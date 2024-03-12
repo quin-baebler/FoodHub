@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
@@ -31,7 +32,9 @@ class CustomListAdapter(
     val lifecycleScope: LifecycleCoroutineScope,
     val itemList: List<FoodItem>,
     val isAddFood: Boolean,
+    val mealTitle: String
     val isFromPostFragment: Boolean
+
 ) : ArrayAdapter<FoodItem>(context, R.layout.list_item_layout, itemList) {
     private val TAG = "CustomListAdapter"
     private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
@@ -41,24 +44,27 @@ class CustomListAdapter(
             itemView = LayoutInflater.from(context).inflate(R.layout.list_item_layout, parent, false)
         }
 
+        val sharedPreferences = activity.getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "User")
+
         val currentItem = itemList[position]
         val title = itemView?.findViewById<TextView>(R.id.food_name)
         title?.text = currentItem.name
 
         val cal = itemView?.findViewById<TextView>(R.id.food_cal)
-        cal?.text = "Calories: ${currentItem.calories}"
+        cal?.text = "Calories: ${currentItem.calories} cal"
 
         val serving = itemView?.findViewById<TextView>(R.id.food_serving)
         serving?.text = "Serving: ${currentItem.serving}"
 
         val protein = itemView?.findViewById<TextView>(R.id.food_protein)
-        protein?.text = "Protein: ${currentItem.protein}"
+        protein?.text = "Protein: ${currentItem.protein} g"
 
         val carbs = itemView?.findViewById<TextView>(R.id.food_carbs)
-        carbs?.text = "Carbs: ${currentItem.carbs}"
+        carbs?.text = "Carbs: ${currentItem.carbs} g"
 
         val fat = itemView?.findViewById<TextView>(R.id.food_fat)
-        fat?.text = "Fat: ${currentItem.fat}"
+        fat?.text = "Fat: ${currentItem.fat} g"
 
         val btn = itemView?.findViewById<android.widget.Button>(R.id.action_btn)
 
@@ -70,7 +76,12 @@ class CustomListAdapter(
                         if (isFromPostFragment) {
                             addFoodToPost(currentItem)
                         } else {
-                            // addFood(currentItem, activity)
+                            val canAddFood = addFood(username!!, "breakfast", currentItem)
+                            if(canAddFood){
+                                Toast.makeText(context, "Successfully added the food item", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(context, "Failed to add food. Try again later", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
@@ -86,8 +97,12 @@ class CustomListAdapter(
                         if (isFromPostFragment) {
                             // deleteFoodFromPost(currentItem)
                         } else {
-                            deleteFood("allison", "breakfast", currentItem.name)
-                        }
+                            val canDelete = deleteFood(username!!, mealTitle, currentItem.foodId)
+                            if(canDelete){
+                                Toast.makeText(context, "Successfully deleted the food item", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(context, "Failed to delete food. Try again later", Toast.LENGTH_SHORT).show()
+                            }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -101,12 +116,12 @@ class CustomListAdapter(
         val url = "${BASE_URL}logger/delete"
         val completableDeferred = CompletableDeferred<Boolean>()
 
-        Log.i("DATA", "given name: ${foodItem}")
+        Log.i("DATA", "meal: ${meal}")
 
         val params = JSONObject().apply {
             // Add your body parameters here
             put("username", username)
-            put("foodItem", foodItem)
+            put("foodId", foodItem)
             put("meal", meal)
         }
 
@@ -127,36 +142,39 @@ class CustomListAdapter(
         return completableDeferred.await()
     }
 
-//    private suspend fun addFood(name: String, cal: String, meal: String, serving: String, nutrition: Array<Int>, activity: Activity): String {
-//        val url = "${BASE_URL}logger"
-//        val completableDeferred = CompletableDeferred<String>()
-//
-//        val params = JSONObject().apply {
-//            // Add your body parameters here
-//            put("username", "alicesmith")
-//            put("foodId", name)
-//            put("meal", meal)
-//            put("calories", cal)
-//            put("servingSize", serving)
-//            put("nutrition", nutrition)
-//        }
-//
-//        val request = JsonObjectRequest(
-//            Request.Method.POST, url, params,
-//            { response ->
-//                val logged = JsonParser().parseLogger(response.toString())
-//                Log.i("DATA", logged.toString())
-//                completableDeferred.complete("successfully delete food")
-//            },
-//            { error ->
-//                Log.e("ERROR", "Error: $error")
-//                completableDeferred.completeExceptionally(error)
-//            }
-//        )
-//        VolleyService.getInstance(activity).add(request)
-//
-//        return completableDeferred.await()
-//    }
+    private suspend fun addFood(username: String, meal: String, foodItem: FoodItem): Boolean {
+        val url = "${BASE_URL}logger"
+
+        Log.i("SLEEP", "foodItem: ${foodItem}")
+        val completableDeferred = CompletableDeferred<Boolean>()
+
+        val gson = Gson()
+        val foodItemJSON = gson.toJson(foodItem)
+
+        val params = JSONObject().apply {
+            put("username", username)
+            put("foodItem", foodItemJSON)
+            put("meal", meal)
+        }
+
+        Log.i("ALMOST", params.toString())
+
+        val request = JsonObjectRequest(
+            Request.Method.POST, url, params,
+            { response ->
+                Log.i("DATA", response.toString())
+                completableDeferred.complete(true)
+            },
+            { error ->
+                Log.e("ERROR", "Error: $error")
+                completableDeferred.completeExceptionally(error)
+                completableDeferred.complete(false)
+            }
+        )
+        VolleyService.getInstance(activity).add(request)
+
+        return completableDeferred.await()
+    }
 
     private fun addFoodToPost(foodItem: FoodItem) {
         // restart the post fragment with foodItem

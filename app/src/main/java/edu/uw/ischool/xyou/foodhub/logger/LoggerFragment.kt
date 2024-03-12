@@ -1,5 +1,6 @@
 package edu.uw.ischool.xyou.foodhub.logger
 
+import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -58,25 +59,41 @@ class LoggerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpCards(view)
+        val sharedPreferences = requireActivity().getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "User")
+        setUpCards(view, username!!)
     }
 
-    private fun setUpCards(view: View) {
+    private fun setUpCards(view: View, username: String) {
         lifecycleScope.launch {
             try {
-                logInfo = fetchLoggerData()
+                logInfo = fetchLoggerData(username)
                 Log.i("PLS", logInfo.toString())
                 val meal = arrayOf("breakfast", "lunch", "snack", "dinner")
 
                 val meals = logInfo.meals
+
+                Log.i("TIRED", logInfo.toString())
+
+                val todayCalories = view.findViewById<TextView>(R.id.day_calories)
+                todayCalories.text = "${logInfo.totalCal.toString()} cal"
 
                 val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
 
                 for (i in calories.indices) {
                     val mealCal = view.findViewById<TextView>(calories[i])
 
-                    val totalCal = meals.getOrNull(i)?.totalCal ?: 0
-                    mealCal.text = "Total calories: $totalCal cal"
+                    // Find the index of the meal
+                    val mealIndex = meals.indexOfFirst { it.name == meal[i] }
+
+                    // Update the card
+                    if (mealIndex != -1) {
+                        val totalCal = meals[mealIndex].totalCal
+                        mealCal.text = "Total calories: $totalCal cal"
+                    } else {
+                        // if no food logged yet, set total cal to 0
+                        mealCal.text = "Total calories: 0 cal"
+                    }
                 }
 
                 // there has to be a better way to do this
@@ -95,16 +112,22 @@ class LoggerFragment : Fragment() {
                     bundle.putString("meal", meal[j])
 
                     val mealIndex = logInfo.meals.indexOfFirst { it.name == meal[j] }
+
                     var data = 0
 
-                    if(mealIndex != -1) {
+                    var foodListJson = "[]"
+
+                    if (mealIndex != -1) {
                         data = logInfo.meals[mealIndex].totalCal
+                        val mealFoods = logInfo.meals[mealIndex].foods ?: emptyList()
 
-                        val gson = Gson()
-                        val foodListJson = gson.toJson(logInfo.meals[mealIndex].foods)
-                        bundle.putString("foodList", foodListJson)
-
+                        if (mealFoods.isNotEmpty()) {
+                            val gson = Gson()
+                            foodListJson = gson.toJson(mealFoods)
+                        }
                     }
+
+                    bundle.putString("foodList", foodListJson)
                     bundle.putInt("mealCal", data)
 
                     val card = view.findViewById<LinearLayout>(cards[j])
@@ -135,14 +158,14 @@ class LoggerFragment : Fragment() {
         }
 
         val proteinTab = view.findViewById<TextView>(nutritionInfo[0])
-        proteinTab.text = totalProtein.toString()
+        proteinTab.text = "${String.format("%.2f", totalProtein)} g"
         val carbsTab = view.findViewById<TextView>(nutritionInfo[1])
-        carbsTab.text = totalCarbs.toString()
+        carbsTab.text = "${String.format("%.2f", totalCarbs)} g"
         val fatTab = view.findViewById<TextView>(nutritionInfo[2])
-        fatTab.text = totalFat.toString()
+        fatTab.text = "${String.format("%.2f", totalFat)} g"
     }
-    private suspend fun fetchLoggerData(): Logger {
-        val url = "${BASE_URL}logger?username=allison"
+    private suspend fun fetchLoggerData(username: String): Logger {
+        val url = "${BASE_URL}logger?username=${username}"
         val completableDeferred = CompletableDeferred<Logger>()
 
         val request = JsonObjectRequest(
