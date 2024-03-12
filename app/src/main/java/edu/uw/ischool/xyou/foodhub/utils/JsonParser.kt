@@ -73,8 +73,9 @@ class JsonParser {
         val protein = food.getDouble("protein")
         val carbs = food.getDouble("carbs")
         val fat = food.getDouble("fat")
+        val id = food.getString("foodId")
 
-        return FoodItem(name, calories, serving, protein, carbs, fat)
+        return FoodItem(name, id, calories, serving, protein, carbs, fat)
     }
 
     fun parseSearchFood(jsonString: String): List<FoodItem> {
@@ -85,12 +86,13 @@ class JsonParser {
             val food = jsonArray.getJSONObject(i)
             val name = food.getString("food_name")
             val desc = food.getString("food_description")
-            resList.add(parseDesc(name, desc))
+            val id = food.getString("food_id")
+            resList.add(parseDesc(name, desc, id))
         }
         return resList
     }
 
-    fun parseDesc(name: String, desc: String): FoodItem {
+    fun parseDesc(name: String, desc: String, id: String): FoodItem {
         var serving = "N/A"
         var calories = 0
         var fat = 0.0
@@ -109,7 +111,7 @@ class JsonParser {
             protein = matchResult.groupValues[5].toDouble()
         }
 
-        return FoodItem(name, calories, serving, protein, carbs, fat)
+        return FoodItem(name, id, calories, serving, protein, carbs, fat)
     }
 
     fun parseComments(jsonString: String): List<Comment> {

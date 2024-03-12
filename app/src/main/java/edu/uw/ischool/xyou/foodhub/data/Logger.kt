@@ -18,6 +18,7 @@ data class Meal (
 
 data class FoodItem (
     val name: String,
+    val foodId: String,
     val calories: Int,
     val serving: String,
     val protein: Double,

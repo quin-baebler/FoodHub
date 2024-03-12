@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
 import edu.uw.ischool.xyou.foodhub.MainActivity
 import edu.uw.ischool.xyou.foodhub.R
 import edu.uw.ischool.xyou.foodhub.data.FoodItem
@@ -62,7 +63,7 @@ class CustomListAdapter(
             btn?.setOnClickListener{
                 lifecycleScope.launch {
                     try {
-//                        addFood(currentItem, activity)
+                        addFood("allison", "breakfast", currentItem)
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -74,7 +75,7 @@ class CustomListAdapter(
                 //delete the food from db
                 lifecycleScope.launch {
                     try {
-                        deleteFood("allison", "breakfast", currentItem.name)
+                        deleteFood("allison", "lunch", currentItem.foodId)
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -88,12 +89,12 @@ class CustomListAdapter(
         val url = "${BASE_URL}logger/delete"
         val completableDeferred = CompletableDeferred<Boolean>()
 
-        Log.i("DATA", "given name: ${foodItem}")
+        Log.i("DATA", "given id: ${foodItem}")
 
         val params = JSONObject().apply {
             // Add your body parameters here
             put("username", username)
-            put("foodItem", foodItem)
+            put("foodId", foodItem)
             put("meal", meal)
         }
 
@@ -114,35 +115,35 @@ class CustomListAdapter(
         return completableDeferred.await()
     }
 
-//    private suspend fun addFood(name: String, cal: String, meal: String, serving: String, nutrition: Array<Int>, activity: Activity): String {
-//        val url = "${BASE_URL}logger"
-//        val completableDeferred = CompletableDeferred<String>()
-//
-//        val params = JSONObject().apply {
-//            // Add your body parameters here
-//            put("username", "alicesmith")
-//            put("foodId", name)
-//            put("meal", meal)
-//            put("calories", cal)
-//            put("servingSize", serving)
-//            put("nutrition", nutrition)
-//        }
-//
-//        val request = JsonObjectRequest(
-//            Request.Method.POST, url, params,
-//            { response ->
-//                val logged = JsonParser().parseLogger(response.toString())
-//                Log.i("DATA", logged.toString())
-//                completableDeferred.complete("successfully delete food")
-//            },
-//            { error ->
-//                Log.e("ERROR", "Error: $error")
-//                completableDeferred.completeExceptionally(error)
-//            }
-//        )
-//        VolleyService.getInstance(activity).add(request)
-//
-//        return completableDeferred.await()
-//    }
+    private suspend fun addFood(username: String, meal: String, foodItem: FoodItem): String {
+        val url = "${BASE_URL}logger"
 
+        Log.i("SLEEP", "foodItem: ${foodItem}")
+        val completableDeferred = CompletableDeferred<String>()
+
+        val gson = Gson()
+        val foodItemJSON = gson.toJson(foodItem)
+
+        val params = JSONObject().apply {
+            put("username", username)
+            put("foodItem", foodItemJSON)
+            put("meal", meal)
+        }
+
+        val request = JsonObjectRequest(
+            Request.Method.POST, url, params,
+            { response ->
+                Log.i("DATA", response.toString())
+                completableDeferred.complete("Successfully added the food item")
+            },
+            { error ->
+                Log.e("ERROR", "Error: $error")
+                completableDeferred.completeExceptionally(error)
+                completableDeferred.complete("Failed to add food")
+            }
+        )
+        VolleyService.getInstance(activity).add(request)
+
+        return completableDeferred.await()
+    }
 }
