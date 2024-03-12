@@ -15,7 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import edu.uw.ischool.xyou.foodhub.R
-import edu.uw.ischool.xyou.foodhub.data.Food
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
@@ -32,7 +32,7 @@ class AddFood: Fragment() {
     private var param2: String? = null
 
     lateinit var searchBar : EditText
-    private val BASEURL = "https://foodhub-backend.azurewebsites.net/api"
+    private val BASEURL = "https://foodhub-backend.azurewebsites.net/api/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,27 +51,18 @@ class AddFood: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        showRes(view)
         super.onViewCreated(view, savedInstanceState)
 
         searchBar = view.findViewById<EditText>(R.id.search_bar)
         val searchBtn = view.findViewById<Button>(R.id.search_btn)
 
-        searchBar.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                searchBtn.isEnabled
-            }
-        })
 
         searchBtn.setOnClickListener{
+            Log.i("TEST", "button clicked")
             lifecycleScope.launch {
                 try {
-                    val searchRes = findFood(searchBar.text.toString())
-                    Log.i("PLS", searchRes.toString())
+                    val searchRes = findFood(view, searchBar.text.toString())
+//                    Log.i("TEST", searchRes.toString())
                 } catch (e: Exception) {
                     Log.e("ERROR", "Failed to fetch data", e)
                 }
@@ -79,16 +70,17 @@ class AddFood: Fragment() {
         }
     }
 
-    private suspend fun findFood(input: String): List<Food> {
-        val url = "${BASEURL}logger?username=janedoe"
-        val completableDeferred = CompletableDeferred<List<Food>>()
+    private suspend fun findFood(view : View, input: String): List<FoodItem> {
+        val url = "${BASEURL}logger/search/${input}"
+        val completableDeferred = CompletableDeferred<List<FoodItem>>()
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
-                val logged = JsonParser().parseFood(response.toString())
-                Log.i("DATA", logged.toString())
-                completableDeferred.complete(logged)
+                val data = JsonParser().parseSearchFood(response.toString())
+                Log.i("DATA", "res: $data")
+                completableDeferred.complete(data)
+                showRes(view, data)
             },
             { error ->
                 Log.e("ERROR", "Error: $error")
@@ -100,14 +92,10 @@ class AddFood: Fragment() {
         return completableDeferred.await()
     }
 
-    private fun showRes(view: View) {
+    private fun showRes(view: View, itemsList: List<FoodItem>) {
         val itemsView = view.findViewById<ListView>(R.id.results)
 
-        val testList = listOf<ArrayList<String>>(arrayListOf("Toasted white bread", "Per 100g - Calories: 293kcal | Fat: 4.00g | Carbs: 54.40g | Protein: 9.00g"),
-            arrayListOf("Toasted whole bread", "Per 100g - Calories: 282kcal | Fat: 4.42g | Carbs: 51.32g | Protein: 9.95g"),
-            arrayListOf("Honey wheat toast", "Per 1 serving - Calories: 120kcal | Fat: 0.50g | Carbs: 25.00g | Protein: 5.00g"))
-
-        val adapter = CustomListAdapter(requireContext(), testList, true)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true)
         itemsView.adapter = adapter
     }
 }

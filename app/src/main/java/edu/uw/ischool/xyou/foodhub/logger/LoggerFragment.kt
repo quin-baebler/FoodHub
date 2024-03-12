@@ -17,7 +17,9 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import edu.uw.ischool.xyou.foodhub.R
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.data.Logger
+import edu.uw.ischool.xyou.foodhub.data.Meal
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.log
+import com.google.gson.Gson
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +40,13 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class LoggerFragment : Fragment() {
-    private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api"
+    private val BASE_URL = "https://foodhub-backend.azurewebsites.net/api/"
+
+    private var logInfo : Logger = Logger("", "", arrayListOf(), hashMapOf(), 0)
+    private val viewLog = ViewLog()
+    private var totalProtein = 0.0
+    private var totalCarbs = 0.0
+    private var totalFat = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,49 +68,92 @@ class LoggerFragment : Fragment() {
     private fun setUpCards(view: View) {
         lifecycleScope.launch {
             try {
-                val logInfo = fetchLoggerData()
+                logInfo = fetchLoggerData()
                 Log.i("PLS", logInfo.toString())
+                val meal = arrayOf("breakfast", "lunch", "snack", "dinner")
+
+                val meals = logInfo.meals
+
+                val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
+
+                for (i in calories.indices) {
+                    val mealCal = view.findViewById<TextView>(calories[i])
+
+                    val totalCal = meals.getOrNull(i)?.totalCal ?: 0
+                    mealCal.text = "Total calories: $totalCal cal"
+                }
+
+                // there has to be a better way to do this
+                val btns = arrayOf(R.id.breakfast_btn, R.id.lunch_btn, R.id.snack_btn, R.id.dinner_btn)
+                val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
+
+                for (btn in btns.indices) {
+                    val addBtn = view.findViewById<android.widget.Button>(btns[btn])
+                    addBtn.setOnClickListener{
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
+                    }
+                }
+
+                for (j in cards.indices) {
+                    val bundle = Bundle()
+                    bundle.putString("meal", meal[j])
+
+                    val mealIndex = logInfo.meals.indexOfFirst { it.name == meal[j] }
+                    var data = 0
+
+                    if(mealIndex != -1) {
+                        data = logInfo.meals[mealIndex].totalCal
+
+                        val gson = Gson()
+                        val foodListJson = gson.toJson(logInfo.meals[mealIndex].foods)
+                        bundle.putString("foodList", foodListJson)
+
+                    }
+                    bundle.putInt("mealCal", data)
+
+                    val card = view.findViewById<LinearLayout>(cards[j])
+                    card.setOnClickListener {
+                        viewLog.arguments = bundle
+                        activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, viewLog)?.commit()
+                    }
+                }
+
+                for (oneMeal in meals.indices) {
+                    getTotalNutritionInfo(view, meals[oneMeal].foods)
+                }
+
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch data", e)
             }
         }
 
-        // there has to be a better way to do this
-        val meal = arrayOf("breakfast", "lunch", "dinner", "snack")
-        val calories = arrayOf(R.id.breakfast_cal, R.id.lunch_cal, R.id.snack_cal, R.id.dinner_cal)
-        val btns = arrayOf(R.id.breakfast_btn, R.id.lunch_btn, R.id.snack_btn, R.id.dinner_btn)
-        val cards = arrayOf(R.id.breakfast_card, R.id.lunch_card, R.id.snack_card, R.id.dinner_card)
-
-        for (i in calories.indices) {
-            val mealCal = view.findViewById<TextView>(calories[i])
-
-        }
-
-        for (btn in btns.indices) {
-            val addBtn = view.findViewById<android.widget.Button>(btns[btn])
-            addBtn.setOnClickListener{
-                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, AddFood())?.commit()
-            }
-        }
-
-        for (i in cards.indices) {
-            val card = view.findViewById<LinearLayout>(cards[i])
-            card.setOnClickListener {
-                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, ViewLog())?.commit()
-            }
-        }
-
     }
 
+    private fun getTotalNutritionInfo(view: View, foodList: ArrayList<FoodItem>) {
+        val nutritionInfo = arrayOf(R.id.protein, R.id.carbs, R.id.fat)
+
+        for (i in foodList.indices) {
+            totalProtein += foodList[i].protein
+            totalCarbs += foodList[i].carbs
+            totalFat += foodList[i].fat
+        }
+
+        val proteinTab = view.findViewById<TextView>(nutritionInfo[0])
+        proteinTab.text = totalProtein.toString()
+        val carbsTab = view.findViewById<TextView>(nutritionInfo[1])
+        carbsTab.text = totalCarbs.toString()
+        val fatTab = view.findViewById<TextView>(nutritionInfo[2])
+        fatTab.text = totalFat.toString()
+    }
     private suspend fun fetchLoggerData(): Logger {
-        val url = "${BASE_URL}logger?username=janedoe"
+        val url = "${BASE_URL}logger?username=allison"
         val completableDeferred = CompletableDeferred<Logger>()
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
+                Log.i("WHY", response.toString())
                 val logged = JsonParser().parseLogger(response.toString())
-                Log.i("DATA", logged.toString())
                 completableDeferred.complete(logged)
             },
             { error ->

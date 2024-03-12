@@ -1,26 +1,18 @@
 package edu.uw.ischool.xyou.foodhub.logger
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import edu.uw.ischool.xyou.foodhub.R
-import edu.uw.ischool.xyou.foodhub.data.Food
-import edu.uw.ischool.xyou.foodhub.utils.JsonParser
-import edu.uw.ischool.xyou.foodhub.utils.VolleyService
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.launch
-import org.json.JSONObject
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,16 +43,26 @@ class ViewLog: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val mealName = arguments?.getString("meal")
+        val mealCal = arguments?.getInt("mealCal")
+        val foodListStr = arguments?.getString("foodList")
+
+        // Convert JSON string back to FoodItem list
+        val foodListType = object : TypeToken<List<FoodItem>>() {}.type
+        val foodList = Gson().fromJson<List<FoodItem>>(foodListStr, foodListType)
+
+
+        val title = view.findViewById<TextView>(R.id.view_log_header)
+        val cal = view.findViewById<TextView>(R.id.meal_cal)
         val itemsView = view.findViewById<ListView>(R.id.logged_items)
 
-        val breakfast = listOf<ArrayList<String>>(arrayListOf("egg", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val lunch = listOf<ArrayList<String>>(arrayListOf("lunch", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val dinner = listOf<ArrayList<String>>(arrayListOf("dinner", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-        val snack = listOf<ArrayList<String>>(arrayListOf("snack", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
+        //there has to be a better way to do this
+        val hateKotlin = hashMapOf<String, String>("breakfast" to "Breakfast", "lunch" to "Lunch",
+                                                    "snack" to "Snack", "dinner" to "Dinner")
+        title.text = hateKotlin[mealName]
+        cal.text = "Calories: ${mealCal}"
 
-        val testList = listOf<ArrayList<String>>(arrayListOf("egg", "10"), arrayListOf("mushroom", "30"), arrayListOf("chicken", "195"))
-
-        val adapter = CustomListAdapter(requireContext(), testList, false)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false)
         itemsView.adapter = adapter
 
     }
