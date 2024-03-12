@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import edu.uw.ischool.xyou.foodhub.R
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.utils.JsonParser
 import edu.uw.ischool.xyou.foodhub.utils.VolleyService
 import kotlinx.coroutines.CompletableDeferred
@@ -55,22 +56,13 @@ class AddFood: Fragment() {
         searchBar = view.findViewById<EditText>(R.id.search_bar)
         val searchBtn = view.findViewById<Button>(R.id.search_btn)
 
-        searchBar.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-        })
 
         searchBtn.setOnClickListener{
             Log.i("TEST", "button clicked")
             lifecycleScope.launch {
                 try {
                     val searchRes = findFood(view, searchBar.text.toString())
-                    Log.i("TEST", searchRes.toString())
+//                    Log.i("TEST", searchRes.toString())
                 } catch (e: Exception) {
                     Log.e("ERROR", "Failed to fetch data", e)
                 }
@@ -78,17 +70,17 @@ class AddFood: Fragment() {
         }
     }
 
-    private suspend fun findFood(view : View, input: String): List<ArrayList<String>> {
+    private suspend fun findFood(view : View, input: String): List<FoodItem> {
         val url = "${BASEURL}logger/search/${input}"
-        val completableDeferred = CompletableDeferred<List<ArrayList<String>>>()
+        val completableDeferred = CompletableDeferred<List<FoodItem>>()
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
-                val logged = JsonParser().parseFood(response.toString())
-                Log.i("DATA", logged.toString())
-                completableDeferred.complete(logged)
-                showRes(view, logged)
+                val data = JsonParser().parseSearchFood(response.toString())
+                Log.i("DATA", "res: $data")
+                completableDeferred.complete(data)
+                showRes(view, data)
             },
             { error ->
                 Log.e("ERROR", "Error: $error")
@@ -100,10 +92,10 @@ class AddFood: Fragment() {
         return completableDeferred.await()
     }
 
-    private fun showRes(view: View, itemsList: List<ArrayList<String>>) {
+    private fun showRes(view: View, itemsList: List<FoodItem>) {
         val itemsView = view.findViewById<ListView>(R.id.results)
 
-        val adapter = CustomListAdapter(requireContext(), itemsList, true)
+        val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, itemsList, true)
         itemsView.adapter = adapter
     }
 }

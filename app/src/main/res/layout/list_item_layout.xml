@@ -19,7 +19,6 @@
                 android:id="@+id/food_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cereal"
                 android:textSize="25dp"
                 android:textStyle="bold"
                 android:layout_margin="10dp"/>
@@ -28,7 +27,30 @@
                 android:id="@+id/food_cal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Calories: 100"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:id="@+id/food_serving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:id="@+id/food_protein"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:id="@+id/food_carbs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:id="@+id/food_fat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"/>
         </LinearLayout>
 

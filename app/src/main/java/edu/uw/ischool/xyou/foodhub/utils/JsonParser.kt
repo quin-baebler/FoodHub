@@ -1,11 +1,10 @@
 package edu.uw.ischool.xyou.foodhub.utils
 
 import android.util.Log
-import edu.uw.ischool.xyou.foodhub.data.Food
-import edu.uw.ischool.xyou.foodhub.data.FoodItem
 import edu.uw.ischool.xyou.foodhub.data.Logger
-import edu.uw.ischool.xyou.foodhub.data.Meal
 import edu.uw.ischool.xyou.foodhub.data.Comment
+import edu.uw.ischool.xyou.foodhub.data.FoodItem
+import edu.uw.ischool.xyou.foodhub.data.Meal
 import edu.uw.ischool.xyou.foodhub.data.Post
 import org.json.JSONArray
 import org.json.JSONObject
@@ -38,77 +37,79 @@ class JsonParser {
     }
 
     fun parseLogger(jsonString: String): Logger {
-        //array of nutrition value [protein, carbs, fat]
-        val overallNutrition = arrayListOf<Int>(0,0,0)
-        val mealList = arrayListOf<Meal>()
-        val meals = arrayListOf<String>("breakfast", "lunch", "snack", "dinner")
-
         val item = JSONObject(jsonString)
-        val date = item.getString("date")
+        val username = item.getString("username")
         val totalCal = item.getInt("totalCal")
+        val date = item.getString("date")
 
-        val foods = item.getJSONArray("foodItems")
+        val meals = item.getJSONArray("meals")
+        val mealsList = arrayListOf<Meal>()
+        val calPerMeal = hashMapOf<String, Int>()
 
-        val calPerMeal = item.getJSONObject("calPerMeal")
-        for(i in meals.indices) {
-            val foodList = arrayListOf<FoodItem>()
-            val nutritionPerMeal = arrayListOf<Int>(0, 0, 0)
+        for(i in 0 until meals.length()){
+            val meal = meals.getJSONObject(i)
+            val mealName = meal.getString("name")
+            val mealCal = meal.getInt("totalCal")
 
-            val chosenMeal = calPerMeal.getJSONObject(meals[i])
-            val cal = chosenMeal.getString("total")
-            val mealFoods = chosenMeal.getJSONArray("foods")
-
-            //get food info for each food item in a meal
-            for (j in 0 until mealFoods.length()) {
-                val nutritionPerItem = arrayListOf<Int>(0, 0, 0)
-                val foodItem = mealFoods.getString(j)
-
-                for(k in 0 until foods.length()) {
-                    val foodObj = foods.getJSONObject(k).keys()
-
-                    while(foodObj.hasNext()) {
-                        val key = foodObj.next()
-                        if(key == foodItem) {
-                            val food = foods.getJSONObject(k).getJSONObject(key)
-                            val servings = food.getJSONArray("serving")
-                            val servingSize = servings.getString(0)
-                            val calPerServing = servings.getInt(1).toString()
-
-                            nutritionPerItem[0] = food.getInt("protein")
-                            nutritionPerItem[1] = food.getInt("carbs")
-                            nutritionPerItem[2] = food.getInt("fat")
-
-                            nutritionPerMeal[0] += food.getInt("protein")
-                            nutritionPerMeal[1] += food.getInt("carbs")
-                            nutritionPerMeal[2] += food.getInt("fat")
-
-                            overallNutrition[0] += food.getInt("protein")
-                            overallNutrition[1] += food.getInt("carbs")
-                            overallNutrition[2] += food.getInt("fat")
-
-                            foodList.add(FoodItem(mealFoods.getString(j), calPerServing, servingSize, nutritionPerItem))
-                        }
-                    }
-                }
+            val foods = meal.getJSONArray("foods")
+            val foodsList = arrayListOf<FoodItem>()
+            for(j in 0 until foods.length()){
+                val food = foods.getJSONObject(j)
+                foodsList.add(parseFood(food))
             }
 
-            mealList.add(Meal(meals[i], cal, foodList, nutritionPerMeal))
+            calPerMeal[mealName] = mealCal
+
+            mealsList.add(Meal(mealName, foodsList, mealCal))
         }
 
-        return Logger(date, totalCal, mealList, overallNutrition)
+        return Logger(username, date, mealsList, calPerMeal, totalCal)
     }
 
-    fun parseFood(jsonString: String): List<ArrayList<String>> {
-        val foods = arrayListOf<ArrayList<String>>()
-        val jsonArray = JSONArray(jsonString)
+    fun parseFood(food: JSONObject): FoodItem {
+        val name = food.getString("name")
+        val calories = food.getInt("calories")
+        val serving = food.getString("serving")
+        val protein = food.getDouble("protein")
+        val carbs = food.getDouble("carbs")
+        val fat = food.getDouble("fat")
+
+        return FoodItem(name, calories, serving, protein, carbs, fat)
+    }
+
+    fun parseSearchFood(jsonString: String): List<FoodItem> {
+        val resList = arrayListOf<FoodItem>()
+        val obj = JSONObject(jsonString)
+        val jsonArray = obj.getJSONArray("info")
         for (i in 0 until jsonArray.length()) {
-            val item = jsonArray.getJSONObject(i)
-            val desc = item.getString("food_description")
-            val name = item.getString("food_name")
-            val type = item.getString("food_type")
-            foods.add(arrayListOf(name, desc, type))
+            val food = jsonArray.getJSONObject(i)
+            val name = food.getString("food_name")
+            val desc = food.getString("food_description")
+            resList.add(parseDesc(name, desc))
         }
-        return foods
+        return resList
+    }
+
+    fun parseDesc(name: String, desc: String): FoodItem {
+        var serving = "N/A"
+        var calories = 0
+        var fat = 0.0
+        var carbs = 0.0
+        var protein = 0.0
+        val pattern = "(Per \\d+g) - Calories: (\\d+)kcal .*?Fat: ([\\d.]+)g .*?Carbs: ([\\d.]+)g .*?Protein: ([\\d.]+)g".toRegex()
+        val matchResult = pattern.find(desc)
+
+        Log.i("DATA", "data: ${matchResult?.groupValues?.get(4)}")
+
+        if (matchResult != null) {
+            serving = matchResult.groupValues[1]
+            calories = matchResult.groupValues[2].toInt()
+            fat = matchResult.groupValues[3].toDouble()
+            carbs = matchResult.groupValues[4].toDouble()
+            protein = matchResult.groupValues[5].toDouble()
+        }
+
+        return FoodItem(name, calories, serving, protein, carbs, fat)
     }
 
     fun parseComments(jsonString: String): List<Comment> {
