@@ -32,7 +32,7 @@ class CustomListAdapter(
     val lifecycleScope: LifecycleCoroutineScope,
     val itemList: List<FoodItem>,
     val isAddFood: Boolean,
-    val mealTitle: String
+    val mealTitle: String,
     val isFromPostFragment: Boolean
 
 ) : ArrayAdapter<FoodItem>(context, R.layout.list_item_layout, itemList) {
@@ -98,11 +98,20 @@ class CustomListAdapter(
                             // deleteFoodFromPost(currentItem)
                         } else {
                             val canDelete = deleteFood(username!!, mealTitle, currentItem.foodId)
-                            if(canDelete){
-                                Toast.makeText(context, "Successfully deleted the food item", Toast.LENGTH_SHORT).show()
-                            }else{
-                                Toast.makeText(context, "Failed to delete food. Try again later", Toast.LENGTH_SHORT).show()
+                            if (canDelete) {
+                                Toast.makeText(
+                                    context,
+                                    "Successfully deleted the food item",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to delete food. Try again later",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+                        }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
