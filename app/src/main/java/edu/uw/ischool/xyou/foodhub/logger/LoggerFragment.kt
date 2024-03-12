@@ -134,7 +134,6 @@ class LoggerFragment : Fragment() {
                     val card = view.findViewById<LinearLayout>(cards[j])
                     card.setOnClickListener {
                         viewLog.arguments = bundle
-                        Log.i("FUCK", "correct bundle?  ${viewLog.arguments.toString()}")
                         activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.container, viewLog)?.commit()
                     }
                 }
@@ -160,11 +159,11 @@ class LoggerFragment : Fragment() {
         }
 
         val proteinTab = view.findViewById<TextView>(nutritionInfo[0])
-        proteinTab.text = totalProtein.toString()
+        proteinTab.text = "${String.format("%.2f", totalProtein)} g"
         val carbsTab = view.findViewById<TextView>(nutritionInfo[1])
-        carbsTab.text = totalCarbs.toString()
+        carbsTab.text = "${String.format("%.2f", totalCarbs)} g"
         val fatTab = view.findViewById<TextView>(nutritionInfo[2])
-        fatTab.text = totalFat.toString()
+        fatTab.text = "${String.format("%.2f", totalFat)} g"
     }
     private suspend fun fetchLoggerData(username: String): Logger {
         val url = "${BASE_URL}logger?username=${username}"

@@ -64,7 +64,7 @@ class ViewLog: Fragment() {
         val hateKotlin = hashMapOf<String, String>("breakfast" to "Breakfast", "lunch" to "Lunch",
                                                     "snack" to "Snack", "dinner" to "Dinner")
         title.text = hateKotlin[mealName]
-        cal.text = "Calories: ${mealCal}"
+        cal.text = "Calories: ${mealCal} cal"
 
         val adapter = CustomListAdapter(requireContext(), requireActivity(), lifecycleScope, foodList, false, mealName!!)
         itemsView.adapter = adapter

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.android.volley.Request
@@ -46,19 +47,19 @@ class CustomListAdapter(
         title?.text = currentItem.name
 
         val cal = itemView?.findViewById<TextView>(R.id.food_cal)
-        cal?.text = "Calories: ${currentItem.calories}"
+        cal?.text = "Calories: ${currentItem.calories} cal"
 
         val serving = itemView?.findViewById<TextView>(R.id.food_serving)
         serving?.text = "Serving: ${currentItem.serving}"
 
         val protein = itemView?.findViewById<TextView>(R.id.food_protein)
-        protein?.text = "Protein: ${currentItem.protein}"
+        protein?.text = "Protein: ${currentItem.protein} g"
 
         val carbs = itemView?.findViewById<TextView>(R.id.food_carbs)
-        carbs?.text = "Carbs: ${currentItem.carbs}"
+        carbs?.text = "Carbs: ${currentItem.carbs} g"
 
         val fat = itemView?.findViewById<TextView>(R.id.food_fat)
-        fat?.text = "Fat: ${currentItem.fat}"
+        fat?.text = "Fat: ${currentItem.fat} g"
 
         val btn = itemView?.findViewById<android.widget.Button>(R.id.action_btn)
 
@@ -67,7 +68,13 @@ class CustomListAdapter(
             btn?.setOnClickListener{
                 lifecycleScope.launch {
                     try {
-                        addFood(username!!, "breakfast", currentItem)
+                        val canAddFood = addFood(username!!, "breakfast", currentItem)
+
+                        if(canAddFood){
+                            Toast.makeText(context, "Successfully added the food item", Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(context, "Failed to add food. Try again later", Toast.LENGTH_SHORT).show()
+                        }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -79,7 +86,13 @@ class CustomListAdapter(
                 //delete the food from db
                 lifecycleScope.launch {
                     try {
-                        deleteFood(username!!, mealTitle, currentItem.foodId)
+                        val canDelete = deleteFood(username!!, mealTitle, currentItem.foodId)
+
+                        if(canDelete){
+                            Toast.makeText(context, "Successfully deleted the food item", Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(context, "Failed to delete food. Try again later", Toast.LENGTH_SHORT).show()
+                        }
                     } catch (e: Exception) {
                         Log.e("ERROR", "Failed to fetch data", e)
                     }
@@ -102,8 +115,6 @@ class CustomListAdapter(
             put("meal", meal)
         }
 
-        Log.i("SHIT", "delete params: ${params.toString()}")
-
         val request = JsonObjectRequest(
             Request.Method.POST, url, params,
             { response ->
@@ -121,11 +132,11 @@ class CustomListAdapter(
         return completableDeferred.await()
     }
 
-    private suspend fun addFood(username: String, meal: String, foodItem: FoodItem): String {
+    private suspend fun addFood(username: String, meal: String, foodItem: FoodItem): Boolean {
         val url = "${BASE_URL}logger"
 
         Log.i("SLEEP", "foodItem: ${foodItem}")
-        val completableDeferred = CompletableDeferred<String>()
+        val completableDeferred = CompletableDeferred<Boolean>()
 
         val gson = Gson()
         val foodItemJSON = gson.toJson(foodItem)
@@ -136,18 +147,18 @@ class CustomListAdapter(
             put("meal", meal)
         }
 
-        Log.i("SHIT", params.toString())
+        Log.i("ALMOST", params.toString())
 
         val request = JsonObjectRequest(
             Request.Method.POST, url, params,
             { response ->
                 Log.i("DATA", response.toString())
-                completableDeferred.complete("Successfully added the food item")
+                completableDeferred.complete(true)
             },
             { error ->
                 Log.e("ERROR", "Error: $error")
                 completableDeferred.completeExceptionally(error)
-                completableDeferred.complete("Failed to add food")
+                completableDeferred.complete(false)
             }
         )
         VolleyService.getInstance(activity).add(request)
